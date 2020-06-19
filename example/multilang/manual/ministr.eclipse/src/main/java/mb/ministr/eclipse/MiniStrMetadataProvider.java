@@ -76,11 +76,4 @@ public class MiniStrMetadataProvider implements LanguageMetadataProvider {
         return Iterables2.singleton(new AbstractMap.SimpleEntry<>(
             new LanguageId("mb.ministr"), this::getLanguageMetadata));
     }
-
-    @Override
-    public Iterable<Map.Entry<ContextId, Iterable<LanguageId>>> getContextConfigurations() {
-        return Iterables2.from(
-            new AbstractMap.SimpleEntry<>(new ContextId("mini-sdf-str"), Iterables2.singleton(new LanguageId("mb.ministr"))),
-            new AbstractMap.SimpleEntry<>(new ContextId("mini-str"), Iterables2.singleton(new LanguageId("mb.ministr"))));
-    }
 }

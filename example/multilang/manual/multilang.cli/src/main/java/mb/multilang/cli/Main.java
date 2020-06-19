@@ -1,5 +1,6 @@
 package mb.multilang.cli;
 
+import com.google.common.collect.Lists;
 import mb.log.slf4j.SLF4JLoggerFactory;
 import mb.minisdf.MSdfClassloaderResources;
 import mb.minisdf.spoofax.DaggerMiniSdfComponent;
@@ -30,6 +31,7 @@ import mb.spoofax.core.platform.LoggerFactoryModule;
 import mb.spoofax.core.platform.PlatformPieModule;
 import mb.spoofax.core.platform.ResourceRegistriesModule;
 import mb.statix.multilang.AnalysisContextService;
+import mb.statix.multilang.ContextConfig;
 import mb.statix.multilang.ContextId;
 import mb.statix.multilang.DaggerMultiLangComponent;
 import mb.statix.multilang.ImmutableLanguageMetadata;
@@ -130,11 +132,14 @@ public class Main {
             .projectConstraint("mini-str/mini-str-typing!mstrProjectOK")
             .build();
 
+        ContextConfig config = new ContextConfig();
+        config.setLanguages(Lists.newArrayList(miniSdfLanguageId.getId(), miniStrLanguageId.getId()));
+
         AnalysisContextService analysisContextService = multiLangComponent.getAnalysisContextService();
         analysisContextService.registerLanguageLoader(miniSdfLanguageId, () -> miniSdfMetadata);
         analysisContextService.registerLanguageLoader(miniStrLanguageId, () -> miniStrMetadata);
-        analysisContextService.registerContextLanguage(new ContextId("mini-sdf-str"),
-            Iterables2.from(miniSdfLanguageId, miniStrLanguageId));
+        analysisContextService.registerContextLanguageProvider(new ContextId("mini-sdf-str"),
+            () -> Iterables2.singleton(config));
         analysisContextService.initializeService();
 
         final MSdfParse mSdfParse = new MSdfParse(miniSdfComponent.getParser());

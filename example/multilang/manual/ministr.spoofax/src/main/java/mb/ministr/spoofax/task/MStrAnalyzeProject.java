@@ -4,13 +4,16 @@ import mb.common.message.KeyedMessages;
 import mb.pie.api.ExecContext;
 import mb.pie.api.TaskDef;
 import mb.resource.ResourceKey;
+import mb.resource.ResourceService;
 import mb.resource.hierarchical.ResourcePath;
 import mb.spoofax.core.language.command.CommandFeedback;
 import mb.spoofax.core.language.command.CommandOutput;
 import mb.statix.multilang.AnalysisContext;
 import mb.statix.multilang.AnalysisContextService;
 import mb.statix.multilang.ContextId;
+import mb.statix.multilang.MultiLangConfig;
 import mb.statix.multilang.tasks.SmlBuildMessages;
+import mb.statix.multilang.utils.ContextUtils;
 import org.metaborg.util.log.Level;
 
 import javax.inject.Inject;
@@ -21,6 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MStrAnalyzeProject implements TaskDef<MStrAnalyzeProject.Input, CommandOutput> {
+;
 
     public static class Input implements Serializable {
         private final ResourcePath projectPath;
@@ -34,10 +38,12 @@ public class MStrAnalyzeProject implements TaskDef<MStrAnalyzeProject.Input, Com
 
     private final SmlBuildMessages buildMessages;
     private final AnalysisContextService analysisContextService;
+    private final ResourceService resourceService;
 
-    @Inject public MStrAnalyzeProject(SmlBuildMessages buildMessages, AnalysisContextService analysisContextService) {
+    @Inject public MStrAnalyzeProject(SmlBuildMessages buildMessages, AnalysisContextService analysisContextService, ResourceService resourceService) {
         this.buildMessages = buildMessages;
         this.analysisContextService = analysisContextService;
+        this.resourceService = resourceService;
     }
 
     @Override public String getId() {
@@ -46,11 +52,13 @@ public class MStrAnalyzeProject implements TaskDef<MStrAnalyzeProject.Input, Com
 
     @Override
     public CommandOutput exec(ExecContext context, Input input) throws Exception {
+        MultiLangConfig config = ContextUtils.readYamlConfig(resourceService, input.projectPath);
+        String contextId = config.getLanguageContexts().getOrDefault("mb.ministr", "mini-sdf-str");
         AnalysisContext analysisContext = analysisContextService
-            .getAnalysisContext(new ContextId("mini-sdf-str"));
+            .getAnalysisContext(new ContextId(contextId));
 
         KeyedMessages messages = context.require(buildMessages
-            .createTask(new SmlBuildMessages.Input(input.projectPath, analysisContext, input.logLevel)));
+            .createTask(new SmlBuildMessages.Input(input.projectPath, analysisContext)));
 
         List<CommandFeedback> output = messages.getAllMessages().stream()
             .flatMap(resourceMessages -> resourceMessages.getValue().stream()

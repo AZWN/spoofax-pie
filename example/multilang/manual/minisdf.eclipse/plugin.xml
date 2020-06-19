@@ -204,5 +204,6 @@
   <!-- Multilang metadata provider -->
   <extension point="mb.metaborg.statix.multilang.analysiscontext">
     <languagemetadata class="mb.minisdf.eclipse.MiniSdfMetadataProvider"/>
+    <contextmetadata class="mb.minisdf.eclipse.MiniSdfContextProvider"/>
   </extension>
 </plugin>

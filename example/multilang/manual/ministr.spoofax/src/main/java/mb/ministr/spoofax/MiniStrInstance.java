@@ -19,6 +19,7 @@ import mb.ministr.spoofax.task.MStrPreStatix;
 import mb.ministr.spoofax.task.MStrStyle;
 import mb.pie.api.Task;
 import mb.resource.ResourceKey;
+import mb.resource.ResourceService;
 import mb.resource.hierarchical.ResourcePath;
 import mb.spoofax.core.language.LanguageInstance;
 import mb.spoofax.core.language.cli.CliCommand;
@@ -29,9 +30,10 @@ import mb.spoofax.core.language.menu.MenuItem;
 import mb.statix.multilang.AnalysisContext;
 import mb.statix.multilang.AnalysisContextService;
 import mb.statix.multilang.ContextId;
+import mb.statix.multilang.MultiLangConfig;
 import mb.statix.multilang.tasks.SmlBuildMessages;
+import mb.statix.multilang.utils.ContextUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.metaborg.util.log.Level;
 import org.spoofax.interpreter.terms.ITermFactory;
 
 import javax.inject.Inject;
@@ -54,6 +56,7 @@ public class MiniStrInstance implements LanguageInstance {
 
     private final ITermFactory termFactory;
     private final AnalysisContextService analysisContextService;
+    private final ResourceService resourceService;
 
     @Inject public MiniStrInstance(
         MStrParse parse,
@@ -66,7 +69,7 @@ public class MiniStrInstance implements LanguageInstance {
         MStrShowAnalyzedAstCommand showAnalyzedAstCommand,
         ITermFactory termFactory,
         AnalysisContextService analysisContextService,
-        MStrIndexAst indexAst) {
+        MStrIndexAst indexAst, ResourceService resourceService) {
         this.parse = parse;
         this.analyze = analyze;
         this.style = style;
@@ -78,6 +81,7 @@ public class MiniStrInstance implements LanguageInstance {
         this.showAnalyzedAstCommand = showAnalyzedAstCommand;
         this.termFactory = termFactory;
         this.analysisContextService = analysisContextService;
+        this.resourceService = resourceService;
     }
 
     @Override public String getDisplayName() {
@@ -102,10 +106,10 @@ public class MiniStrInstance implements LanguageInstance {
 
     @Override
     public Task<@Nullable KeyedMessages> createCheckTask(ResourcePath projectRoot) {
-        // Todo: Proper initialization
-        AnalysisContext context = analysisContextService.getAnalysisContext(new ContextId("mini-sdf-str"));
-
-        return analyze.createTask(new SmlBuildMessages.Input(projectRoot, context, Level.Warn));
+        MultiLangConfig config = ContextUtils.readYamlConfig(resourceService, projectRoot);
+        String contextId = config.getLanguageContexts().getOrDefault("mb.ministr", "mini-sdf-str");
+        AnalysisContext context = analysisContextService.getAnalysisContext(new ContextId(contextId));
+        return analyze.createTask(new SmlBuildMessages.Input(projectRoot, context));
     }
 
     @Override public CollectionView<CommandDef<?>> getCommandDefs() {
