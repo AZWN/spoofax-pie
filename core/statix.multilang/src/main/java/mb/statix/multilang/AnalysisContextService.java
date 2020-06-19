@@ -10,23 +10,22 @@ import mb.resource.ResourceService;
 import mb.spoofax.core.platform.Platform;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @MultiLangScope
 public class AnalysisContextService {
 
     private final Map<ContextId, AnalysisContext> contexts = new HashMap<>();
     private final Map<LanguageId, Supplier<LanguageMetadata>> languages = new HashMap<>();
-    private final MultiHashMap<ContextId, Supplier<Iterable<ContextConfig>>> contextLanguages = new MultiHashMap<>();
+    private final MultiHashMap<ContextId, ContextConfig> contextConfigurations = new MultiHashMap<>();
 
     private final Pie basePie;
     private final ResourceService baseResourceService;
@@ -85,32 +84,27 @@ public class AnalysisContextService {
         languages.put(languageId, languageMetadata);
     }
 
-    public void registerContextLanguageProvider(ContextId contextId, Supplier<Iterable<ContextConfig>> configs) {
+    public void registerContextConfig(ContextId contextId, ContextConfig configs) {
         if (serviceInitialized && contexts.containsKey(contextId)) {
             logger.warn("Registering languages for already initialized context.");
             // TODO: Maybe update context?
         }
-        contextLanguages.put(contextId, configs);
+        contextConfigurations.put(contextId, configs);
     }
 
     private AnalysisContext initializeContext(ContextId contextId) {
         if (contexts.containsKey(contextId)) {
             throw new MultiLangAnalysisException(String.format("Context with id '%s' is already initialized", contextId));
         }
-        if (!contextLanguages.containsKey(contextId)) {
+        if (!contextConfigurations.containsKey(contextId)) {
             throw new MultiLangAnalysisException("No configuration for context with id " + contextId);
         }
 
-        Set<ContextConfig> contextConfigs = contextLanguages.get(contextId)
-            .stream()
-            .map(Supplier::get)
-            .flatMap(languageIds -> StreamSupport.stream(languageIds.spliterator(), false))
-            .collect(Collectors.toSet());
+        ArrayList<ContextConfig> contextConfigs = contextConfigurations.get(contextId);
 
         Map<LanguageId, LanguageMetadata> languagesForContext = contextConfigs.stream()
             .map(ContextConfig::getLanguages)
             .flatMap(List::stream)
-            .map(LanguageId::new)
             .map(languageId -> languages.computeIfAbsent(languageId, key -> {
                 throw new MultiLangAnalysisException("Cannot initialize context " + key +
                     ". No metadata for language " + key);
