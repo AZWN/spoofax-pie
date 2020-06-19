@@ -1,0 +1,9 @@
+module util
+
+imports
+  arith-base
+
+rules
+
+  bracketize-expr: a -> Factor(Bracket(a))
+  bracketize-term: b -> Bracket(Term(b))

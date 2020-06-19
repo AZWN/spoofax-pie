@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+  <!-- Context -->
+  <extension point="org.eclipse.ui.contexts">
+    <context
+      id="ministr.eclipse.context"
+      parentId="org.eclipse.ui.textEditorScope"
+      name="Editing MiniStr files"
+      description="Editing MiniStr files"
+    />
+  </extension>
+
+
+  <!-- Editor -->
+  <extension point="org.eclipse.ui.editors">
+    <editor
+      name="MiniStr editor"
+      extensions="mstr"
+      class="mb.ministr.eclipse.MiniStrEditor"
+      id="ministr.eclipse.editor"
+    />
+  </extension>
+
+
+  <!-- Markers -->
+  <!-- Base -->
+  <extension
+    point="org.eclipse.core.resources.markers"
+    id="ministr.eclipse.marker"
+  >
+    <super type="org.eclipse.core.resources.textmarker"/>
+    <super type="org.eclipse.core.resources.problemmarker"/>
+    <persistent value="true"/>
+  </extension>
+  <!-- Info -->
+  <extension
+    point="org.eclipse.core.resources.markers"
+    id="ministr.eclipse.marker.info"
+    name="MiniStr info marker"
+  >
+    <super type="ministr.eclipse.marker"/>
+    <persistent value="true"/>
+  </extension>
+  <!-- Warning -->
+  <extension
+    point="org.eclipse.core.resources.markers"
+    id="ministr.eclipse.marker.warning"
+    name="MiniStr warning marker"
+  >
+    <super type="ministr.eclipse.marker"/>
+    <persistent value="true"/>
+  </extension>
+  <!-- Error -->
+  <extension
+    point="org.eclipse.core.resources.markers"
+    id="ministr.eclipse.marker.error"
+    name="MiniStr error marker"
+  >
+    <super type="ministr.eclipse.marker"/>
+    <persistent value="true"/>
+  </extension>
+
+
+  <!-- Annotations -->
+  <extension point="org.eclipse.ui.editors.annotationTypes">
+    <!-- Info -->
+    <type
+      markerType="ministr.eclipse.marker.info"
+      super="org.eclipse.ui.workbench.texteditor.info"
+      markerSeverity="0"
+      name="MiniStr info annotation"
+    />
+    <!-- Warning -->
+    <type
+      markerType="ministr.eclipse.marker.warning"
+      super="org.eclipse.ui.workbench.texteditor.warning"
+      markerSeverity="1"
+      name="MiniStr warning annotation"
+    />
+    <!-- Error -->
+    <type
+      markerType="ministr.eclipse.marker.error"
+      super="org.eclipse.ui.workbench.texteditor.error"
+      markerSeverity="2"
+      name="MiniStr error annotation"
+    />
+  </extension>
+
+
+  <!-- Document Provider -->
+  <extension point="org.eclipse.ui.editors.documentProviders">
+    <provider
+      extensions="mstr"
+      class="mb.ministr.eclipse.MiniStrDocumentProvider"
+      id="ministr.eclipse.documentprovider"
+    />
+  </extension>
+
+
+  <!-- Builder -->
+  <extension
+    point="org.eclipse.core.resources.builders"
+    name="MiniStr builder"
+    id="builder"
+  >
+    <builder
+      hasNature="true"
+      isConfigurable="false"
+      callOnEmptyDelta="false"
+      supportsConfigurations="false"
+    >
+      <run class="mb.ministr.eclipse.MiniStrProjectBuilder"/>
+    </builder>
+  </extension>
+
+
+  <!-- Nature -->
+  <extension
+    point="org.eclipse.core.resources.natures"
+    name="MiniStr nature"
+    id="nature"
+  >
+    <runtime>
+      <run class="mb.ministr.eclipse.MiniStrNature"/>
+    </runtime>
+    <builder id="ministr.eclipse.builder"/>
+  </extension>
+
+
+  <!-- Menus -->
+  <extension point="org.eclipse.ui.menus">
+    <!-- Project Explorer context menu -->
+    <menuContribution locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
+      <dynamic id="ministr.eclipse.menu.resource.context" class="mb.ministr.eclipse.MiniStrResourceContextMenu"/>
+    </menuContribution>
+    <!-- Package Explorer context menu -->
+    <menuContribution locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?after=additions">
+      <dynamic id="ministr.eclipse.menu.resource.context" class="mb.ministr.eclipse.MiniStrResourceContextMenu"/>
+    </menuContribution>
+    <!-- Editor context menu -->
+    <menuContribution locationURI="popup:#SpoofaxEditorContext?after=additions">
+      <dynamic id="ministr.eclipse.menu.editor.context" class="mb.ministr.eclipse.MiniStrEditorContextMenu"/>
+    </menuContribution>
+    <!-- Main menu -->
+    <menuContribution locationURI="menu:org.eclipse.ui.main.menu">
+      <menu id="ministr.eclipse.menu.main" label="MiniStr">
+        <dynamic id="ministr.eclipse.menu.main.dynamic" class="mb.ministr.eclipse.MiniStrMainMenu"/>
+        <visibleWhen>
+          <with variable="activeContexts">
+            <iterate ifEmpty="false" operator="or">
+              <equals value="ministr.eclipse.context"/>
+            </iterate>
+          </with>
+        </visibleWhen>
+      </menu>
+    </menuContribution>
+  </extension>
+
+
+  <!-- Commands and Handlers -->
+  <!-- Add/Remove Nature -->
+  <extension point="org.eclipse.ui.commands">
+    <command id="ministr.eclipse.nature.add" name="Add MiniStr nature"/>
+    <command id="ministr.eclipse.nature.remove" name="Remove MiniStr nature"/>
+  </extension>
+  <extension point="org.eclipse.ui.handlers">
+    <handler
+      commandId="ministr.eclipse.nature.add"
+      class="mb.ministr.eclipse.MiniStrAddNatureHandler"
+    />
+    <handler
+      commandId="ministr.eclipse.nature.remove"
+      class="mb.ministr.eclipse.MiniStrRemoveNatureHandler"
+    />
+  </extension>
+  <!-- Observe/Unobserve -->
+  <extension point="org.eclipse.ui.commands">
+    <command id="ministr.eclipse.observe" name="Observe file(s)"/>
+    <command id="ministr.eclipse.unobserve" name="Unobserve file(s)"/>
+  </extension>
+  <extension point="org.eclipse.ui.handlers">
+    <handler
+      commandId="ministr.eclipse.observe"
+      class="mb.ministr.eclipse.MiniStrObserveHandler"
+    />
+    <handler
+      commandId="ministr.eclipse.unobserve"
+      class="mb.ministr.eclipse.MiniStrUnobserveHandler"
+    />
+  </extension>
+  <!-- Transform -->
+  <extension point="org.eclipse.ui.commands">
+    <command id="ministr.eclipse.command" name="Command">
+      <commandParameter id="data" name="Data" optional="false"/>
+    </command>
+  </extension>
+  <extension point="org.eclipse.ui.handlers">
+    <handler
+      commandId="ministr.eclipse.command"
+      class="mb.ministr.eclipse.MiniStrCommandHandler"
+    />
+  </extension>
+  <!-- Multilang metadata provider -->
+  <extension point="mb.metaborg.statix.multilang.analysiscontext">
+    <languagemetadata class="mb.ministr.eclipse.MiniStrMetadataProvider"/>
+  </extension>
+</plugin>

@@ -1,0 +1,17 @@
+module boolean
+
+sorts
+  BExpN BExpA BExpO BExpL Var
+
+context-free syntax
+
+  BExpA.And 		= <<BExpA> && <BExpO>>
+  BExpO.Or	 		= <<BExpO> || <BExpN>>
+
+  BExpN.NoNot		= <<BExpL>>
+  BExpN.Not 		= <!<BExpL>>
+
+  BExpL.True 		= <true>
+  BExpL.False 		= <false>
+  BExpL.Var 		= <<Var>>
+  BExpL.Brckt		= <(<BExpA>)>

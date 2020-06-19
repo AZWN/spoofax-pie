@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+  <!-- Context -->
+  <extension point="org.eclipse.ui.contexts">
+    <context
+      id="minisdf.eclipse.context"
+      parentId="org.eclipse.ui.textEditorScope"
+      name="Editing MiniSdf files"
+      description="Editing MiniSdf files"
+    />
+  </extension>
+
+
+  <!-- Editor -->
+  <extension point="org.eclipse.ui.editors">
+    <editor
+      name="MiniSdf editor"
+      extensions="msdf"
+      class="mb.minisdf.eclipse.MiniSdfEditor"
+      id="minisdf.eclipse.editor"
+    />
+  </extension>
+
+
+  <!-- Markers -->
+  <!-- Base -->
+  <extension
+    point="org.eclipse.core.resources.markers"
+    id="minisdf.eclipse.marker"
+  >
+    <super type="org.eclipse.core.resources.textmarker"/>
+    <super type="org.eclipse.core.resources.problemmarker"/>
+    <persistent value="true"/>
+  </extension>
+  <!-- Info -->
+  <extension
+    point="org.eclipse.core.resources.markers"
+    id="minisdf.eclipse.marker.info"
+    name="MiniSdf info marker"
+  >
+    <super type="minisdf.eclipse.marker"/>
+    <persistent value="true"/>
+  </extension>
+  <!-- Warning -->
+  <extension
+    point="org.eclipse.core.resources.markers"
+    id="minisdf.eclipse.marker.warning"
+    name="MiniSdf warning marker"
+  >
+    <super type="minisdf.eclipse.marker"/>
+    <persistent value="true"/>
+  </extension>
+  <!-- Error -->
+  <extension
+    point="org.eclipse.core.resources.markers"
+    id="minisdf.eclipse.marker.error"
+    name="MiniSdf error marker"
+  >
+    <super type="minisdf.eclipse.marker"/>
+    <persistent value="true"/>
+  </extension>
+
+
+  <!-- Annotations -->
+  <extension point="org.eclipse.ui.editors.annotationTypes">
+    <!-- Info -->
+    <type
+      markerType="minisdf.eclipse.marker.info"
+      super="org.eclipse.ui.workbench.texteditor.info"
+      markerSeverity="0"
+      name="MiniSdf info annotation"
+    />
+    <!-- Warning -->
+    <type
+      markerType="minisdf.eclipse.marker.warning"
+      super="org.eclipse.ui.workbench.texteditor.warning"
+      markerSeverity="1"
+      name="MiniSdf warning annotation"
+    />
+    <!-- Error -->
+    <type
+      markerType="minisdf.eclipse.marker.error"
+      super="org.eclipse.ui.workbench.texteditor.error"
+      markerSeverity="2"
+      name="MiniSdf error annotation"
+    />
+  </extension>
+
+
+  <!-- Document Provider -->
+  <extension point="org.eclipse.ui.editors.documentProviders">
+    <provider
+      extensions="msdf"
+      class="mb.minisdf.eclipse.MiniSdfDocumentProvider"
+      id="minisdf.eclipse.documentprovider"
+    />
+  </extension>
+
+
+  <!-- Builder -->
+  <extension
+    point="org.eclipse.core.resources.builders"
+    name="MiniSdf builder"
+    id="builder"
+  >
+    <builder
+      hasNature="true"
+      isConfigurable="false"
+      callOnEmptyDelta="false"
+      supportsConfigurations="false"
+    >
+      <run class="mb.minisdf.eclipse.MiniSdfProjectBuilder"/>
+    </builder>
+  </extension>
+
+
+  <!-- Nature -->
+  <extension
+    point="org.eclipse.core.resources.natures"
+    name="MiniSdf nature"
+    id="nature"
+  >
+    <runtime>
+      <run class="mb.minisdf.eclipse.MiniSdfNature"/>
+    </runtime>
+    <builder id="minisdf.eclipse.builder"/>
+  </extension>
+
+
+  <!-- Menus -->
+  <extension point="org.eclipse.ui.menus">
+    <!-- Project Explorer context menu -->
+    <menuContribution locationURI="popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
+      <dynamic id="minisdf.eclipse.menu.resource.context" class="mb.minisdf.eclipse.MiniSdfResourceContextMenu"/>
+    </menuContribution>
+    <!-- Package Explorer context menu -->
+    <menuContribution locationURI="popup:org.eclipse.jdt.ui.PackageExplorer?after=additions">
+      <dynamic id="minisdf.eclipse.menu.resource.context" class="mb.minisdf.eclipse.MiniSdfResourceContextMenu"/>
+    </menuContribution>
+    <!-- Editor context menu -->
+    <menuContribution locationURI="popup:#SpoofaxEditorContext?after=additions">
+      <dynamic id="minisdf.eclipse.menu.editor.context" class="mb.minisdf.eclipse.MiniSdfEditorContextMenu"/>
+    </menuContribution>
+    <!-- Main menu -->
+    <menuContribution locationURI="menu:org.eclipse.ui.main.menu">
+      <menu id="minisdf.eclipse.menu.main" label="MiniSdf">
+        <dynamic id="minisdf.eclipse.menu.main.dynamic" class="mb.minisdf.eclipse.MiniSdfMainMenu"/>
+        <visibleWhen>
+          <with variable="activeContexts">
+            <iterate ifEmpty="false" operator="or">
+              <equals value="minisdf.eclipse.context"/>
+            </iterate>
+          </with>
+        </visibleWhen>
+      </menu>
+    </menuContribution>
+  </extension>
+
+
+  <!-- Commands and Handlers -->
+  <!-- Add/Remove Nature -->
+  <extension point="org.eclipse.ui.commands">
+    <command id="minisdf.eclipse.nature.add" name="Add MiniSdf nature"/>
+    <command id="minisdf.eclipse.nature.remove" name="Remove MiniSdf nature"/>
+  </extension>
+  <extension point="org.eclipse.ui.handlers">
+    <handler
+      commandId="minisdf.eclipse.nature.add"
+      class="mb.minisdf.eclipse.MiniSdfAddNatureHandler"
+    />
+    <handler
+      commandId="minisdf.eclipse.nature.remove"
+      class="mb.minisdf.eclipse.MiniSdfRemoveNatureHandler"
+    />
+  </extension>
+  <!-- Observe/Unobserve -->
+  <extension point="org.eclipse.ui.commands">
+    <command id="minisdf.eclipse.observe" name="Observe file(s)"/>
+    <command id="minisdf.eclipse.unobserve" name="Unobserve file(s)"/>
+  </extension>
+  <extension point="org.eclipse.ui.handlers">
+    <handler
+      commandId="minisdf.eclipse.observe"
+      class="mb.minisdf.eclipse.MiniSdfObserveHandler"
+    />
+    <handler
+      commandId="minisdf.eclipse.unobserve"
+      class="mb.minisdf.eclipse.MiniSdfUnobserveHandler"
+    />
+  </extension>
+  <!-- Transform -->
+  <extension point="org.eclipse.ui.commands">
+    <command id="minisdf.eclipse.command" name="Command">
+      <commandParameter id="data" name="Data" optional="false"/>
+    </command>
+  </extension>
+  <extension point="org.eclipse.ui.handlers">
+    <handler
+      commandId="minisdf.eclipse.command"
+      class="mb.minisdf.eclipse.MiniSdfCommandHandler"
+    />
+  </extension>
+  <!-- Multilang metadata provider -->
+  <extension point="mb.metaborg.statix.multilang.analysiscontext">
+    <languagemetadata class="mb.minisdf.eclipse.MiniSdfMetadataProvider"/>
+  </extension>
+</plugin>

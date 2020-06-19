@@ -1,0 +1,9 @@
+module arith-ext
+
+imports
+  arith-base
+  // example/util // Fails: sdf can not import str
+
+context-free syntax
+  Expr.MPlus	= <++<Expr*>>
+  Term.MTimes 	= <**<Term*>>
