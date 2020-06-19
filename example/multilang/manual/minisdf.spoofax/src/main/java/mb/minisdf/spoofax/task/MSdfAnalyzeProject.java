@@ -10,6 +10,7 @@ import mb.spoofax.core.language.command.CommandOutput;
 import mb.statix.multilang.AnalysisContext;
 import mb.statix.multilang.AnalysisContextService;
 import mb.statix.multilang.ContextId;
+import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.MultiLangConfig;
 import mb.statix.multilang.tasks.SmlBuildMessages;
 import mb.statix.multilang.utils.ContextUtils;
@@ -36,9 +37,10 @@ public class MSdfAnalyzeProject implements TaskDef<ResourcePath, CommandOutput> 
     @Override
     public CommandOutput exec(ExecContext context, ResourcePath projectRoot) {
         MultiLangConfig config = ContextUtils.readYamlConfig(resourceService, projectRoot);
-        String contextId = config.getLanguageContexts().getOrDefault("mb.minisdf", "mini-sdf-str");
+        ContextId contextId = config.getLanguageContexts()
+            .getOrDefault(new LanguageId("mb.minisdf"), new ContextId("mini-sdf-str"));
         AnalysisContext analysisContext = analysisContextService
-            .getAnalysisContext(new ContextId(contextId));
+            .getAnalysisContext(contextId);
 
         KeyedMessages messages = context.require(buildMessages
             .createTask(new SmlBuildMessages.Input(projectRoot, analysisContext)));

@@ -11,6 +11,7 @@ import mb.spoofax.core.language.command.CommandOutput;
 import mb.statix.multilang.AnalysisContext;
 import mb.statix.multilang.AnalysisContextService;
 import mb.statix.multilang.ContextId;
+import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.MultiLangConfig;
 import mb.statix.multilang.tasks.SmlBuildMessages;
 import mb.statix.multilang.utils.ContextUtils;
@@ -53,9 +54,9 @@ public class MStrAnalyzeProject implements TaskDef<MStrAnalyzeProject.Input, Com
     @Override
     public CommandOutput exec(ExecContext context, Input input) throws Exception {
         MultiLangConfig config = ContextUtils.readYamlConfig(resourceService, input.projectPath);
-        String contextId = config.getLanguageContexts().getOrDefault("mb.ministr", "mini-sdf-str");
+        ContextId contextId = config.getLanguageContexts().getOrDefault(new LanguageId("mb.ministr"), new ContextId("mini-sdf-str"));
         AnalysisContext analysisContext = analysisContextService
-            .getAnalysisContext(new ContextId(contextId));
+            .getAnalysisContext(contextId);
 
         KeyedMessages messages = context.require(buildMessages
             .createTask(new SmlBuildMessages.Input(input.projectPath, analysisContext)));

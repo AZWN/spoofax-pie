@@ -133,13 +133,12 @@ public class Main {
             .build();
 
         ContextConfig config = new ContextConfig();
-        config.setLanguages(Lists.newArrayList(miniSdfLanguageId.getId(), miniStrLanguageId.getId()));
+        config.setLanguages(Lists.newArrayList(miniSdfLanguageId, miniStrLanguageId));
 
         AnalysisContextService analysisContextService = multiLangComponent.getAnalysisContextService();
         analysisContextService.registerLanguageLoader(miniSdfLanguageId, () -> miniSdfMetadata);
         analysisContextService.registerLanguageLoader(miniStrLanguageId, () -> miniStrMetadata);
-        analysisContextService.registerContextLanguageProvider(new ContextId("mini-sdf-str"),
-            () -> Iterables2.singleton(config));
+        analysisContextService.registerContextConfig(new ContextId("mini-sdf-str"), config);
         analysisContextService.initializeService();
 
         final MSdfParse mSdfParse = new MSdfParse(miniSdfComponent.getParser());

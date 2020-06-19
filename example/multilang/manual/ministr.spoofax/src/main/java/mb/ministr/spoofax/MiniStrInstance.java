@@ -30,6 +30,7 @@ import mb.spoofax.core.language.menu.MenuItem;
 import mb.statix.multilang.AnalysisContext;
 import mb.statix.multilang.AnalysisContextService;
 import mb.statix.multilang.ContextId;
+import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.MultiLangConfig;
 import mb.statix.multilang.tasks.SmlBuildMessages;
 import mb.statix.multilang.utils.ContextUtils;
@@ -107,8 +108,9 @@ public class MiniStrInstance implements LanguageInstance {
     @Override
     public Task<@Nullable KeyedMessages> createCheckTask(ResourcePath projectRoot) {
         MultiLangConfig config = ContextUtils.readYamlConfig(resourceService, projectRoot);
-        String contextId = config.getLanguageContexts().getOrDefault("mb.ministr", "mini-sdf-str");
-        AnalysisContext context = analysisContextService.getAnalysisContext(new ContextId(contextId));
+        ContextId contextId = config.getLanguageContexts()
+            .getOrDefault(new LanguageId("mb.ministr"), new ContextId("mini-sdf-str"));
+        AnalysisContext context = analysisContextService.getAnalysisContext(contextId);
         return analyze.createTask(new SmlBuildMessages.Input(projectRoot, context));
     }
 

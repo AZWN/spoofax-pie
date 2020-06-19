@@ -38,12 +38,12 @@ public class MiniSdfContextProvider extends ConstantContextMetadataProvider {
         super(getDefaultContexts());
     }
 
-    private static Map<ContextId, Iterable<ContextConfig>> getDefaultContexts() {
+    private static Map<ContextId, ContextConfig> getDefaultContexts() {
         ContextConfig config = new ContextConfig();
-        config.setLanguages(Lists.newArrayList("mb.minisdf"));
-        HashMap<ContextId, Iterable<ContextConfig>> configMap = new HashMap<>();
-        configMap.put(new ContextId("minisdf"), Lists.newArrayList(config));
-        configMap.put(new ContextId("mini-sdf-str"), Lists.newArrayList(config));
+        config.setLanguages(Lists.newArrayList(new LanguageId("mb.minisdf")));
+        HashMap<ContextId, ContextConfig> configMap = new HashMap<>();
+        configMap.put(new ContextId("minisdf"), config);
+        configMap.put(new ContextId("mini-sdf-str"), config);
         return configMap;
     }
 }
