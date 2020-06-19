@@ -1,5 +1,6 @@
 package mb.statix.multilang.eclipse;
 
+import mb.log.api.Logger;
 import mb.statix.multilang.AnalysisContextService;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -9,6 +10,8 @@ import java.util.stream.Stream;
 
 public class AnalysisContextInitializer {
     private static final String ANALYSIS_CONTEXT_ID = "mb.metaborg.statix.multilang.analysiscontext";
+    private static final Logger logger = MultiLangPlugin.getComponent().getLoggerFactory()
+        .create(AnalysisContextInitializer.class);
 
     public static void execute(IExtensionRegistry registry) {
         AnalysisContextService analysisContextService = MultiLangPlugin.getComponent().getAnalysisContextService();
@@ -20,11 +23,9 @@ public class AnalysisContextInitializer {
             .map(AnalysisContextInitializer::loadClass)
             .filter(LanguageMetadataProvider.class::isInstance)
             .map(LanguageMetadataProvider.class::cast)
-            .forEach(provider -> {
-                // Register languageMetadata
-                provider.getLanguageMetadatas().forEach(entry -> analysisContextService
-                    .registerLanguageLoader(entry.getKey(), new CachingSupplier<>(entry.getValue())));
-            });
+            // Register languageMetadata
+            .forEach(provider -> provider.getLanguageMetadatas().forEach(entry -> analysisContextService
+                .registerLanguageLoader(entry.getKey(), new CachingSupplier<>(entry.getValue()))));
 
         // Initialize context metadata providers
         Stream.of(extensions)
@@ -32,11 +33,9 @@ public class AnalysisContextInitializer {
             .map(AnalysisContextInitializer::loadClass)
             .filter(ContextMetadataProvider.class::isInstance)
             .map(ContextMetadataProvider.class::cast)
-            .forEach(provider -> {
-                // Register contextId->Language mappings
-                provider.getContextConfigurations().forEach(entry -> analysisContextService
-                    .registerContextLanguageProvider(entry.getKey(), new CachingSupplier<>(entry.getValue())));
-            });
+            // Register contextId->Language mappings
+            .forEach(provider -> provider.getContextConfigurations().forEach(entry -> analysisContextService
+                .registerContextLanguageProvider(entry.getKey(), new CachingSupplier<>(entry.getValue()))));
 
         analysisContextService.initializeService();
     }
@@ -45,7 +44,7 @@ public class AnalysisContextInitializer {
         try {
             return conf.createExecutableExtension("class");
         } catch(CoreException e) {
-            e.printStackTrace();
+            logger.error("Error loading context initializer. Ignoring configuration element.", e);
         }
         return null;
     }
