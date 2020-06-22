@@ -26,7 +26,6 @@ dependencies {
   api(compositeBuild("stratego.common"))
   api(compositeBuild("constraint.common"))
 
-  implementation(compositeBuild("statix.common"))
   implementation(compositeBuild("statix.multilang"))
   implementation("org.metaborg:strategoxt-min-jar")
 

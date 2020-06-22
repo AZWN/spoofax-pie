@@ -5,7 +5,6 @@ import mb.log.api.LoggerFactory;
 import mb.resource.ResourceService;
 import mb.resource.hierarchical.HierarchicalResource;
 import mb.spoofax.compiler.interfaces.spoofaxcore.StrategoRuntimeBuilderFactory;
-import mb.statix.common.StatixPrimitiveLibrary;
 import mb.stratego.common.StrategoRuntimeBuilder;
 
 public class MSdfStrategoRuntimeBuilderFactory implements StrategoRuntimeBuilderFactory {
@@ -24,7 +23,6 @@ public class MSdfStrategoRuntimeBuilderFactory implements StrategoRuntimeBuilder
         final StrategoRuntimeBuilder builder = new StrategoRuntimeBuilder(loggerFactory, resourceService, definitionDir);
         builder.withJarParentClassLoader(MSdfStrategoRuntimeBuilderFactory.class.getClassLoader());
         builder.addCtree(definitionDir.appendRelativePath("target/metaborg/stratego.ctree"));
-        builder.addLibrary(new StatixPrimitiveLibrary());
         builder.addLibrary(new ConstraintPrimitiveLibrary(resourceService));
         return builder;
     }
