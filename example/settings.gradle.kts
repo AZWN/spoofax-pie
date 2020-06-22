@@ -81,3 +81,10 @@ fun String.includeProject(id: String, path: String = "$this/$id") {
   includeProject("multilang.manual.test", "multilang/manual/multilang.test")
   includeProject("multilang.manual.eclipse", "multilang/manual/multilang.eclipse")
 }
+
+"multilang/generated".run {
+  includeProject("minisdf")
+  includeProject("minisdf.spoofax")
+  includeProject("minisdf.eclipse.externaldeps")
+  includeProject("minisdf.eclipse")
+}
