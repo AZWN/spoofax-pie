@@ -25,7 +25,7 @@ spoofaxAdapterProject {
       .rootModule("mini-str/mini-str-typing")
       .preAnalysisStrategy("pre-analyze")
       .postAnalysisStrategy("post-analyze")
-      .contextId("mini-str-str")
+      .contextId("mini-sdf-str")
       .fileConstraint("mini-str/mini-str-typing!mstrProgramOK")
       .projectConstraint("mini-str/mini-str-typing!mstrProjectOK"),
 
