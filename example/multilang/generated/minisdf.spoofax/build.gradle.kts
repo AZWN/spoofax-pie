@@ -23,6 +23,9 @@ spoofaxAdapterProject {
     strategoRuntime = StrategoRuntimeCompiler.AdapterProjectInput.builder(),
     multilangAnalyzer = MultilangAnalyzerCompiler.AdapterProjectInput.builder()
       .rootModule("mini-sdf/mini-sdf-typing")
+      .preAnalysisStrategy("pre-analyze")
+      .postAnalysisStrategy("post-analyze")
+      .contextId("mini-sdf-str")
       .fileConstraint("mini-sdf/mini-sdf-typing!msdfProgramOK")
       .projectConstraint("mini-sdf/mini-sdf-typing!msdfProjectOK"),
 

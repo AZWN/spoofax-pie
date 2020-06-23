@@ -21,6 +21,7 @@ spoofaxLanguageProject {
   settings.set(mb.spoofax.compiler.gradle.spoofaxcore.LanguageProjectSettings(
     shared = mb.spoofax.compiler.spoofaxcore.Shared.builder()
       .name("MiniSdf")
+      .fileExtensions(listOf("msdf"))
       .defaultBasePackageId("mb.minisdf"),
 
     parser = ParserCompiler.LanguageProjectInput.builder()
@@ -31,7 +32,8 @@ spoofaxLanguageProject {
       .enableNaBL2(false)
       .enableStatix(false)
       .copyClasses(false)
-      .copyJavaStrategyClasses(false),
+      .copyJavaStrategyClasses(false)
+      .copyCTree(true),
     multilangAnalyzer = MultilangAnalyzerCompiler.LanguageProjectInput.builder(),
 
     builder = LanguageProjectCompiler.Input.builder()
