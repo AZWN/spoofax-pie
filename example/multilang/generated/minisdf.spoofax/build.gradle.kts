@@ -21,7 +21,10 @@ spoofaxAdapterProject {
     styler = StylerCompiler.AdapterProjectInput.builder(),
     completer = CompleterCompiler.AdapterProjectInput.builder(),
     strategoRuntime = StrategoRuntimeCompiler.AdapterProjectInput.builder(),
-    multilangAnalyzer = MultilangAnalyzerCompiler.AdapterProjectInput.builder(),
+    multilangAnalyzer = MultilangAnalyzerCompiler.AdapterProjectInput.builder()
+      .rootModule("mini-sdf/mini-sdf-typing")
+      .fileConstraint("mini-sdf/mini-sdf-typing!msdfProgramOK")
+      .projectConstraint("mini-sdf/mini-sdf-typing!msdfProjectOK"),
 
     builder = run {
       AdapterProjectCompiler.Input.builder()
