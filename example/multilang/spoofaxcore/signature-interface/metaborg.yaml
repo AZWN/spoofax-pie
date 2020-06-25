@@ -1,0 +1,15 @@
+---
+id: org.metaborg:signature-interface:0.1.0-SNAPSHOT
+name: signature-interface
+dependencies:
+  compile:
+  - org.metaborg:org.metaborg.meta.lang.template:${metaborgVersion}
+  - org.metaborg:statix.lang:${metaborgVersion}
+language:
+  sdf:
+    sdf2table: java
+debug:
+  typesmart: false
+exports:
+- language: ATerm
+  directory: src-gen/statix
