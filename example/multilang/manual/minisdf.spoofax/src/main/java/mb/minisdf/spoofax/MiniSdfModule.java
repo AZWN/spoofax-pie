@@ -17,9 +17,9 @@ import mb.minisdf.spoofax.task.MSdfIndexAst;
 import mb.minisdf.spoofax.task.MSdfParse;
 import mb.minisdf.spoofax.task.MSdfPostStatix;
 import mb.minisdf.spoofax.task.MSdfPreStatix;
+import mb.minisdf.spoofax.task.MSdfSmlCheck;
 import mb.minisdf.spoofax.task.MSdfStyle;
 import mb.pie.api.MapTaskDefs;
-import mb.pie.api.MixedSession;
 import mb.pie.api.Pie;
 import mb.pie.api.TaskDef;
 import mb.pie.api.TaskDefs;
@@ -32,15 +32,15 @@ import mb.spoofax.core.language.LanguageScope;
 import mb.spoofax.core.language.command.AutoCommandRequest;
 import mb.spoofax.core.language.command.CommandDef;
 import mb.spoofax.core.platform.Platform;
-import mb.statix.multilang.AnalysisContextService;
-import mb.statix.multilang.ContextId;
+import mb.statix.multilang.MultiLang;
 import mb.statix.multilang.pie.SmlAnalyzeProject;
 import mb.statix.multilang.pie.SmlBuildContextConfiguration;
 import mb.statix.multilang.pie.SmlBuildMessages;
+import mb.statix.multilang.pie.SmlBuildSpec;
 import mb.statix.multilang.pie.SmlInstantiateGlobalScope;
-import mb.statix.multilang.pie.SmlLanguageContext;
 import mb.statix.multilang.pie.SmlPartialSolveFile;
 import mb.statix.multilang.pie.SmlPartialSolveProject;
+import mb.statix.multilang.pie.SmlReadConfigYaml;
 import mb.stratego.common.StrategoRuntime;
 import mb.stratego.common.StrategoRuntimeBuilder;
 import org.spoofax.interpreter.terms.ITermFactory;
@@ -116,6 +116,49 @@ public class MiniSdfModule {
         return builder.buildFromPrototype(prototype);
     }
 
+    // Inject sml tasks into correct scope
+    @Provides @LanguageScope
+    static SmlAnalyzeProject provideAnalyzeProject(@MultiLang SmlAnalyzeProject analyzeProject) {
+        return analyzeProject;
+    }
+
+    @Provides @LanguageScope
+    static SmlBuildContextConfiguration provideBuildContextConfiguration(
+        @MultiLang SmlBuildContextConfiguration buildContextConfiguration
+    ) {
+        return buildContextConfiguration;
+    }
+
+    @Provides @LanguageScope
+    static SmlBuildMessages provideBuildMessages(@MultiLang SmlBuildMessages buildMessages) {
+        return buildMessages;
+    }
+
+    @Provides @LanguageScope
+    static SmlBuildSpec provideBuildSpec(@MultiLang SmlBuildSpec buildSpec) {
+        return buildSpec;
+    }
+
+    @Provides @LanguageScope
+    static SmlPartialSolveFile providePartialSolveFile(@MultiLang SmlPartialSolveFile partialSolveFile) {
+        return partialSolveFile;
+    }
+
+    @Provides @LanguageScope
+    static SmlPartialSolveProject providePartialSolveProject(@MultiLang SmlPartialSolveProject partialSolveProject) {
+        return partialSolveProject;
+    }
+
+    @Provides @LanguageScope
+    static SmlInstantiateGlobalScope provideInstantiateGlobalScope(@MultiLang SmlInstantiateGlobalScope instantiateGlobalScope) {
+        return instantiateGlobalScope;
+    }
+
+    @Provides @LanguageScope
+    static SmlReadConfigYaml provideReadConfigYaml(@MultiLang SmlReadConfigYaml readConfigYaml) {
+        return readConfigYaml;
+    }
+
     @Provides @LanguageScope @ElementsIntoSet
     static Set<TaskDef<?, ?>> provideTaskDefsSet(
         MSdfParse parse,
@@ -124,14 +167,18 @@ public class MiniSdfModule {
         MSdfPreStatix preStatix,
         MSdfPostStatix postStatix,
         MSdfIndexAst index,
+        MSdfSmlCheck check,
+        MSdfAnalyzeProject analyzeMSdfProject,
 
-        SmlBuildMessages analyze,
+        SmlBuildContextConfiguration buildContextConfiguration,
+        SmlReadConfigYaml readConfigYaml,
+
         SmlAnalyzeProject analyzeProject,
-        SmlPartialSolveFile partialSolveFile,
+        SmlBuildMessages buildMessages,
+        SmlBuildSpec buildSpec,
         SmlPartialSolveProject partialSolveProject,
-        SmlInstantiateGlobalScope instantiateGlobalScope,
-
-        MSdfAnalyzeProject analyzeMSdfProject
+        SmlPartialSolveFile partialSolveFile,
+        SmlInstantiateGlobalScope instantiateGlobalScope
     ) {
         final HashSet<TaskDef<?, ?>> taskDefs = new HashSet<>();
 
@@ -142,13 +189,18 @@ public class MiniSdfModule {
         taskDefs.add(postStatix);
         taskDefs.add(index);
 
-        taskDefs.add(analyze);
+        taskDefs.add(check);
+        taskDefs.add(analyzeMSdfProject);
+
+        taskDefs.add(buildContextConfiguration);
+        taskDefs.add(readConfigYaml);
+
         taskDefs.add(analyzeProject);
+        taskDefs.add(buildMessages);
+        taskDefs.add(buildSpec);
         taskDefs.add(partialSolveFile);
         taskDefs.add(partialSolveProject);
         taskDefs.add(instantiateGlobalScope);
-
-        taskDefs.add(analyzeMSdfProject);
 
         return taskDefs;
     }

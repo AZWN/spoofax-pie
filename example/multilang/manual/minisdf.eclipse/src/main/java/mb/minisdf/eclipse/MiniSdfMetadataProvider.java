@@ -18,11 +18,10 @@ import mb.statix.multilang.eclipse.LanguageMetadataProvider;
 import mb.statix.multilang.spec.SpecBuilder;
 import mb.statix.multilang.spec.SpecLoadException;
 import mb.statix.multilang.spec.SpecUtils;
-import org.metaborg.util.iterators.Iterables2;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -63,8 +62,8 @@ public class MiniSdfMetadataProvider implements LanguageMetadataProvider {
                 .mapInput((exec, key) ->  miniSdf.indexAst().createSupplier(key)))
             .postTransform(miniSdf.postStatix().createFunction())
             .languageId(new LanguageId("mb.minisdf"))
-            .addAllTaskDefs(component.getTaskDefs())
-            .addResourceRegistries(MSdfClassloaderResources.createClassLoaderResourceRegistry())
+            .languagePie(component.languagePie())
+            .termFactory(component.getStrategoRuntime().getTermFactory())
             .statixSpec(spec)
             .fileConstraint("mini-sdf/mini-sdf-typing!msdfProgramOK")
             .projectConstraint("mini-sdf/mini-sdf-typing!msdfProjectOK")
@@ -72,8 +71,16 @@ public class MiniSdfMetadataProvider implements LanguageMetadataProvider {
     }
 
     @Override
-    public Iterable<Map.Entry<LanguageId, Supplier<LanguageMetadata>>> getLanguageMetadatas() {
-        return Iterables2.singleton(new AbstractMap.SimpleEntry<>(
-            new LanguageId("mb.minisdf"), this::getLanguageMetadata));
+    public Map<LanguageId, Supplier<LanguageMetadata>> getLanguageMetadataSuppliers() {
+        Map<LanguageId, Supplier<LanguageMetadata>> result = new HashMap<>();
+        result.put(new LanguageId("mb.minisdf"), this::getLanguageMetadata);
+        return result;
+    }
+
+    @Override
+    public Map<LanguageId, ContextId> getDefaultLanguageContexts() {
+        Map<LanguageId, ContextId> result = new HashMap<>();
+        result.put(new LanguageId("mb.minisdf"), new ContextId("mini-sdf-str"));
+        return result;
     }
 }

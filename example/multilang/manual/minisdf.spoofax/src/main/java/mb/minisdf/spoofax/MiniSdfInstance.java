@@ -15,6 +15,7 @@ import mb.minisdf.spoofax.task.MSdfIndexAst;
 import mb.minisdf.spoofax.task.MSdfParse;
 import mb.minisdf.spoofax.task.MSdfPostStatix;
 import mb.minisdf.spoofax.task.MSdfPreStatix;
+import mb.minisdf.spoofax.task.MSdfSmlCheck;
 import mb.minisdf.spoofax.task.MSdfStyle;
 import mb.pie.api.Task;
 import mb.resource.ResourceKey;
@@ -46,7 +47,7 @@ public class MiniSdfInstance implements LanguageInstance {
     private final MSdfIdeTokenize tokenize;
     private final MSdfComplete complete;
 
-    private final SmlBuildMessages analyze;
+    private final MSdfSmlCheck check;
     private final MSdfPreStatix preStatix;
     private final MSdfIndexAst indexAst;
     private final MSdfPostStatix postStatix;
@@ -59,7 +60,7 @@ public class MiniSdfInstance implements LanguageInstance {
 
     @Inject public MiniSdfInstance(
         MSdfParse parse,
-        SmlBuildMessages analyze,
+        MSdfSmlCheck check,
         MSdfStyle style,
         MSdfIdeTokenize tokenize,
         MSdfComplete complete,
@@ -68,7 +69,7 @@ public class MiniSdfInstance implements LanguageInstance {
         MSdfShowAnalyzedAstCommand showAnalyzedAstCommand,
         ITermFactory termFactory, AnalysisContextService analysisContextService, ResourceService resourceService) {
         this.parse = parse;
-        this.analyze = analyze;
+        this.check = check;
         this.style = style;
         this.tokenize = tokenize;
         this.complete = complete;
@@ -103,7 +104,7 @@ public class MiniSdfInstance implements LanguageInstance {
 
     @Override
     public Task<@Nullable KeyedMessages> createCheckTask(ResourcePath projectRoot) {
-        return analyze.createTask(new SmlBuildMessages.Input(projectRoot, new LanguageId("mb.minisdf")));
+        return check.createTask(projectRoot);
     }
 
     @Override public CollectionView<CommandDef<?>> getCommandDefs() {

@@ -8,25 +8,16 @@ import mb.resource.hierarchical.ResourcePath;
 import mb.spoofax.core.language.command.CommandFeedback;
 import mb.spoofax.core.language.command.CommandOutput;
 import mb.statix.multilang.AnalysisContextService;
-import mb.statix.multilang.ContextId;
-import mb.statix.multilang.LanguageId;
-import mb.statix.multilang.MultiLangConfig;
-import mb.statix.multilang.pie.SmlBuildMessages;
-import mb.statix.multilang.utils.ContextUtils;
 
 import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MSdfAnalyzeProject implements TaskDef<ResourcePath, CommandOutput> {
-    private final SmlBuildMessages buildMessages;
-    private final AnalysisContextService analysisContextService;
-    private final ResourceService resourceService;
+    private final MSdfSmlCheck check;
 
-    @Inject public MSdfAnalyzeProject(SmlBuildMessages buildMessages, AnalysisContextService analysisContextService, ResourceService resourceService) {
-        this.buildMessages = buildMessages;
-        this.analysisContextService = analysisContextService;
-        this.resourceService = resourceService;
+    @Inject public MSdfAnalyzeProject(MSdfSmlCheck check) {
+        this.check = check;
     }
 
     @Override public String getId() {
@@ -35,8 +26,7 @@ public class MSdfAnalyzeProject implements TaskDef<ResourcePath, CommandOutput> 
 
     @Override
     public CommandOutput exec(ExecContext context, ResourcePath projectRoot) {
-        KeyedMessages messages = context.require(buildMessages
-            .createTask(new SmlBuildMessages.Input(projectRoot, new LanguageId("mb.minisdf"))));
+        KeyedMessages messages = context.require(check.createTask(projectRoot));
 
         List<CommandFeedback> output = messages.getAllMessages().stream()
             .flatMap(resourceMessages -> resourceMessages.getValue().stream()

@@ -1,4 +1,5 @@
 package mb.ministr.spoofax.task;
+import mb.pie.api.Task;
 
 import mb.common.message.KeyedMessages;
 import mb.pie.api.ExecContext;
@@ -8,12 +9,11 @@ import mb.resource.ResourceService;
 import mb.resource.hierarchical.ResourcePath;
 import mb.spoofax.core.language.command.CommandFeedback;
 import mb.spoofax.core.language.command.CommandOutput;
-import mb.statix.multilang.AnalysisContext;
 import mb.statix.multilang.AnalysisContextService;
 import mb.statix.multilang.ContextId;
 import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.MultiLangConfig;
-import mb.statix.multilang.tasks.SmlBuildMessages;
+import mb.statix.multilang.pie.SmlBuildMessages;
 import mb.statix.multilang.utils.ContextUtils;
 import org.metaborg.util.log.Level;
 
@@ -25,8 +25,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MStrAnalyzeProject implements TaskDef<MStrAnalyzeProject.Input, CommandOutput> {
-;
-
     public static class Input implements Serializable {
         private final ResourcePath projectPath;
         private final Level logLevel;
