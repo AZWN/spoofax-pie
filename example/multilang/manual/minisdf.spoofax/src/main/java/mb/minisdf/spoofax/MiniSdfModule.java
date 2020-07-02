@@ -19,6 +19,7 @@ import mb.minisdf.spoofax.task.MSdfPostStatix;
 import mb.minisdf.spoofax.task.MSdfPreStatix;
 import mb.minisdf.spoofax.task.MSdfStyle;
 import mb.pie.api.MapTaskDefs;
+import mb.pie.api.MixedSession;
 import mb.pie.api.Pie;
 import mb.pie.api.TaskDef;
 import mb.pie.api.TaskDefs;
@@ -34,8 +35,10 @@ import mb.spoofax.core.platform.Platform;
 import mb.statix.multilang.AnalysisContextService;
 import mb.statix.multilang.ContextId;
 import mb.statix.multilang.pie.SmlAnalyzeProject;
+import mb.statix.multilang.pie.SmlBuildContextConfiguration;
 import mb.statix.multilang.pie.SmlBuildMessages;
 import mb.statix.multilang.pie.SmlInstantiateGlobalScope;
+import mb.statix.multilang.pie.SmlLanguageContext;
 import mb.statix.multilang.pie.SmlPartialSolveFile;
 import mb.statix.multilang.pie.SmlPartialSolveProject;
 import mb.stratego.common.StrategoRuntime;
@@ -156,10 +159,8 @@ public class MiniSdfModule {
     }
 
     @Provides @LanguageScope
-    static Pie providePie(@Platform Pie pie) {
-        // Always return PIE instance from analysis context, to get optimal incrementality
-        // For tasks that are dependent on/dependents of analysis tasks.
-        return analysisContext.getAnalysisContext(new ContextId("mini-sdf-str")).createPieForContext();
+    static Pie providePie(@Platform Pie pie, TaskDefs taskDefs, ResourceService resourceService) {
+        return pie.createChildBuilder().withTaskDefs(taskDefs).withResourceService(resourceService).build();
     }
 
     @Provides @LanguageScope @ElementsIntoSet
