@@ -26,12 +26,11 @@ import mb.spoofax.core.language.cli.CliParam;
 import mb.spoofax.core.language.command.AutoCommandRequest;
 import mb.spoofax.core.language.command.CommandDef;
 import mb.spoofax.core.language.menu.MenuItem;
-import mb.statix.multilang.AnalysisContext;
 import mb.statix.multilang.AnalysisContextService;
 import mb.statix.multilang.ContextId;
 import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.MultiLangConfig;
-import mb.statix.multilang.tasks.SmlBuildMessages;
+import mb.statix.multilang.pie.SmlBuildMessages;
 import mb.statix.multilang.utils.ContextUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spoofax.interpreter.terms.ITermFactory;
@@ -104,10 +103,7 @@ public class MiniSdfInstance implements LanguageInstance {
 
     @Override
     public Task<@Nullable KeyedMessages> createCheckTask(ResourcePath projectRoot) {
-        MultiLangConfig config = ContextUtils.readYamlConfig(resourceService, projectRoot);
-        ContextId contextId = config.getLanguageContexts().getOrDefault(new LanguageId("mb.minisdf"), new ContextId("mini-sdf-str"));
-        AnalysisContext context = analysisContextService.getAnalysisContext(contextId);
-        return analyze.createTask(new SmlBuildMessages.Input(projectRoot, context));
+        return analyze.createTask(new SmlBuildMessages.Input(projectRoot, new LanguageId("mb.minisdf")));
     }
 
     @Override public CollectionView<CommandDef<?>> getCommandDefs() {

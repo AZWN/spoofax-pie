@@ -7,12 +7,11 @@ import mb.resource.ResourceService;
 import mb.resource.hierarchical.ResourcePath;
 import mb.spoofax.core.language.command.CommandFeedback;
 import mb.spoofax.core.language.command.CommandOutput;
-import mb.statix.multilang.AnalysisContext;
 import mb.statix.multilang.AnalysisContextService;
 import mb.statix.multilang.ContextId;
 import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.MultiLangConfig;
-import mb.statix.multilang.tasks.SmlBuildMessages;
+import mb.statix.multilang.pie.SmlBuildMessages;
 import mb.statix.multilang.utils.ContextUtils;
 
 import javax.inject.Inject;
@@ -36,14 +35,8 @@ public class MSdfAnalyzeProject implements TaskDef<ResourcePath, CommandOutput> 
 
     @Override
     public CommandOutput exec(ExecContext context, ResourcePath projectRoot) {
-        MultiLangConfig config = ContextUtils.readYamlConfig(resourceService, projectRoot);
-        ContextId contextId = config.getLanguageContexts()
-            .getOrDefault(new LanguageId("mb.minisdf"), new ContextId("mini-sdf-str"));
-        AnalysisContext analysisContext = analysisContextService
-            .getAnalysisContext(contextId);
-
         KeyedMessages messages = context.require(buildMessages
-            .createTask(new SmlBuildMessages.Input(projectRoot, analysisContext)));
+            .createTask(new SmlBuildMessages.Input(projectRoot, new LanguageId("mb.minisdf"))));
 
         List<CommandFeedback> output = messages.getAllMessages().stream()
             .flatMap(resourceMessages -> resourceMessages.getValue().stream()
