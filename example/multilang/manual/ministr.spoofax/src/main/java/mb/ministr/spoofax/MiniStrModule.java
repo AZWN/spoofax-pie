@@ -17,6 +17,7 @@ import mb.ministr.spoofax.task.MStrIndexAst;
 import mb.ministr.spoofax.task.MStrParse;
 import mb.ministr.spoofax.task.MStrPostStatix;
 import mb.ministr.spoofax.task.MStrPreStatix;
+import mb.ministr.spoofax.task.MStrSmlCheck;
 import mb.ministr.spoofax.task.MStrStyle;
 import mb.pie.api.MapTaskDefs;
 import mb.pie.api.Pie;
@@ -31,13 +32,15 @@ import mb.spoofax.core.language.LanguageScope;
 import mb.spoofax.core.language.command.AutoCommandRequest;
 import mb.spoofax.core.language.command.CommandDef;
 import mb.spoofax.core.platform.Platform;
-import mb.statix.multilang.AnalysisContextService;
-import mb.statix.multilang.ContextId;
-import mb.statix.multilang.tasks.SmlAnalyzeProject;
-import mb.statix.multilang.tasks.SmlBuildMessages;
-import mb.statix.multilang.tasks.SmlInstantiateGlobalScope;
-import mb.statix.multilang.tasks.SmlPartialSolveFile;
-import mb.statix.multilang.tasks.SmlPartialSolveProject;
+import mb.statix.multilang.MultiLang;
+import mb.statix.multilang.pie.SmlAnalyzeProject;
+import mb.statix.multilang.pie.SmlBuildContextConfiguration;
+import mb.statix.multilang.pie.SmlBuildMessages;
+import mb.statix.multilang.pie.SmlBuildSpec;
+import mb.statix.multilang.pie.SmlInstantiateGlobalScope;
+import mb.statix.multilang.pie.SmlPartialSolveFile;
+import mb.statix.multilang.pie.SmlPartialSolveProject;
+import mb.statix.multilang.pie.SmlReadConfigYaml;
 import mb.stratego.common.StrategoRuntime;
 import mb.stratego.common.StrategoRuntimeBuilder;
 import org.spoofax.interpreter.terms.ITermFactory;
@@ -112,6 +115,48 @@ public class MiniStrModule {
     static StrategoRuntime provideStrategoRuntime(StrategoRuntimeBuilder builder, @Named("prototype") StrategoRuntime prototype) {
         return builder.buildFromPrototype(prototype);
     }
+    // Inject sml tasks into correct scope
+    @Provides @LanguageScope
+    static SmlAnalyzeProject provideAnalyzeProject(@MultiLang SmlAnalyzeProject analyzeProject) {
+        return analyzeProject;
+    }
+
+    @Provides @LanguageScope
+    static SmlBuildContextConfiguration provideBuildContextConfiguration(
+        @MultiLang SmlBuildContextConfiguration buildContextConfiguration
+    ) {
+        return buildContextConfiguration;
+    }
+
+    @Provides @LanguageScope
+    static SmlBuildMessages provideBuildMessages(@MultiLang SmlBuildMessages buildMessages) {
+        return buildMessages;
+    }
+
+    @Provides @LanguageScope
+    static SmlBuildSpec provideBuildSpec(@MultiLang SmlBuildSpec buildSpec) {
+        return buildSpec;
+    }
+
+    @Provides @LanguageScope
+    static SmlPartialSolveFile providePartialSolveFile(@MultiLang SmlPartialSolveFile partialSolveFile) {
+        return partialSolveFile;
+    }
+
+    @Provides @LanguageScope
+    static SmlPartialSolveProject providePartialSolveProject(@MultiLang SmlPartialSolveProject partialSolveProject) {
+        return partialSolveProject;
+    }
+
+    @Provides @LanguageScope
+    static SmlInstantiateGlobalScope provideInstantiateGlobalScope(@MultiLang SmlInstantiateGlobalScope instantiateGlobalScope) {
+        return instantiateGlobalScope;
+    }
+
+    @Provides @LanguageScope
+    static SmlReadConfigYaml provideReadConfigYaml(@MultiLang SmlReadConfigYaml readConfigYaml) {
+        return readConfigYaml;
+    }
 
     @Provides @LanguageScope @ElementsIntoSet
     static Set<TaskDef<?, ?>> provideTaskDefsSet(
@@ -120,15 +165,19 @@ public class MiniStrModule {
         MStrComplete complete,
         MStrPreStatix preStatix,
         MStrPostStatix postStatix,
-        MStrIndexAst indexAst,
+        MStrIndexAst index,
+        MStrSmlCheck check,
+        MStrAnalyzeProject analyzeMStrProject,
 
-        SmlBuildMessages analyze,
+        SmlBuildContextConfiguration buildContextConfiguration,
+        SmlReadConfigYaml readConfigYaml,
+
         SmlAnalyzeProject analyzeProject,
-        SmlPartialSolveFile partialSolveFile,
+        SmlBuildMessages buildMessages,
+        SmlBuildSpec buildSpec,
         SmlPartialSolveProject partialSolveProject,
-        SmlInstantiateGlobalScope instantiateGlobalScope,
-
-        MStrAnalyzeProject analyzeMStrProject
+        SmlPartialSolveFile partialSolveFile,
+        SmlInstantiateGlobalScope instantiateGlobalScope
     ) {
         final HashSet<TaskDef<?, ?>> taskDefs = new HashSet<>();
 
@@ -137,15 +186,20 @@ public class MiniStrModule {
         taskDefs.add(complete);
         taskDefs.add(preStatix);
         taskDefs.add(postStatix);
-        taskDefs.add(indexAst);
+        taskDefs.add(index);
 
-        taskDefs.add(analyze);
+        taskDefs.add(check);
+        taskDefs.add(analyzeMStrProject);
+
+        taskDefs.add(buildContextConfiguration);
+        taskDefs.add(readConfigYaml);
+
         taskDefs.add(analyzeProject);
+        taskDefs.add(buildMessages);
+        taskDefs.add(buildSpec);
         taskDefs.add(partialSolveFile);
         taskDefs.add(partialSolveProject);
         taskDefs.add(instantiateGlobalScope);
-
-        taskDefs.add(analyzeMStrProject);
 
         return taskDefs;
     }
@@ -156,10 +210,8 @@ public class MiniStrModule {
     }
 
     @Provides @LanguageScope
-    static Pie providePie(AnalysisContextService analysisContext) {
-        // Always return PIE instance from analysis context, to get optimal incrementality
-        // For tasks that are dependent on/dependents of analysis tasks.
-        return analysisContext.getAnalysisContext(new ContextId("mini-sdf-str")).createPieForContext();
+    static Pie providePie(@Platform Pie pie, TaskDefs taskDefs, ResourceService resourceService) {
+        return pie.createChildBuilder().withTaskDefs(taskDefs).withResourceService(resourceService).build();
     }
 
     @Provides @LanguageScope @ElementsIntoSet

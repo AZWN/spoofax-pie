@@ -1,13 +1,13 @@
 package mb.ministr.eclipse;
 
-import com.google.common.collect.Lists;
-import mb.statix.multilang.ContextConfig;
 import mb.statix.multilang.ContextId;
 import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.eclipse.ConstantContextMetadataProvider;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class MiniStrContextProvider extends ConstantContextMetadataProvider {
 
@@ -15,12 +15,11 @@ public class MiniStrContextProvider extends ConstantContextMetadataProvider {
         super(getDefaultContexts());
     }
 
-    private static Map<ContextId, ContextConfig> getDefaultContexts() {
-        ContextConfig config = new ContextConfig();
-        config.setLanguages(Lists.newArrayList(new LanguageId("mb.ministr")));
-        HashMap<ContextId, ContextConfig> configMap = new HashMap<>();
-        configMap.put(new ContextId("ministr"), config);
-        configMap.put(new ContextId("mini-sdf-str"), config);
+    private static Map<ContextId, Set<LanguageId>> getDefaultContexts() {
+        Set<LanguageId> languageIds = Collections.singleton(new LanguageId("mb.ministr"));
+        HashMap<ContextId, Set<LanguageId>> configMap = new HashMap<>();
+        configMap.put(new ContextId("mb.ministr"), languageIds);
+        configMap.put(new ContextId("mini-sdf-str"), languageIds);
         return configMap;
     }
 }

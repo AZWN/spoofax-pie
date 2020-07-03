@@ -1,11 +1,13 @@
 package mb.ministr.spoofax;
 
 import dagger.Component;
+import mb.pie.api.Pie;
 import mb.pie.api.TaskDef;
 import mb.spoofax.core.language.LanguageComponent;
 import mb.spoofax.core.language.LanguageScope;
 import mb.spoofax.core.platform.PlatformComponent;
 import mb.statix.multilang.MultiLangComponent;
+import mb.stratego.common.StrategoRuntime;
 
 import java.util.Set;
 
@@ -17,5 +19,7 @@ import java.util.Set;
 public interface MiniStrComponent extends LanguageComponent {
     @Override MiniStrInstance getLanguageInstance();
 
-    Set<TaskDef<?,?>> getTaskDefs();
+    StrategoRuntime getStrategoRuntime();
+
+    Pie languagePie();
 }

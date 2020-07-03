@@ -53,22 +53,19 @@ public class MStrShowAnalyzedAstCommand implements CommandDef<MStrShowAnalyzedAs
     @Override
     public Args fromRawArgs(RawArgs rawArgs) {
         final ResourcePath projectDir = rawArgs.getOrThrow("project");
-        final @Nullable Level level = rawArgs.getOrNull("level");
-        return new Args(projectDir, level);
+        return new Args(projectDir);
     }
 
     @Override
     public Task<CommandOutput> createTask(Args args) {
-        return analyzeProject.createTask(new MStrAnalyzeProject.Input(args.projectDir, args.level));
+        return analyzeProject.createTask(args.projectDir);
     }
 
     public static class Args implements Serializable {
         private final ResourcePath projectDir;
-        private final @Nullable Level level;
 
-        public Args(ResourcePath projectDir, @Nullable Level level) {
+        public Args(ResourcePath projectDir) {
             this.projectDir = projectDir;
-            this.level = level;
         }
     }
 }

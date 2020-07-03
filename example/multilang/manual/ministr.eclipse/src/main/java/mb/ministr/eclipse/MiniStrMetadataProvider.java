@@ -18,11 +18,10 @@ import mb.statix.multilang.eclipse.LanguageMetadataProvider;
 import mb.statix.multilang.spec.SpecBuilder;
 import mb.statix.multilang.spec.SpecLoadException;
 import mb.statix.multilang.spec.SpecUtils;
-import org.metaborg.util.iterators.Iterables2;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -30,18 +29,18 @@ import java.util.stream.Collectors;
 
 public class MiniStrMetadataProvider implements LanguageMetadataProvider {
 
-    public LanguageMetadata getLanguageMetadata() {
+    private LanguageMetadata getLanguageMetadata() {
         MiniStrComponent component = MiniStrPlugin.getComponent();
         MiniStrInstance miniStr = component.getLanguageInstance();
 
-        ResourceKeyString miniStrSpecPath = ResourceKeyString.of("mb/ministr/src-gen/statix");
-        ClassLoaderResource miniStrSpec = MStrClassloaderResources
+        ResourceKeyString miniSdfSpecPath = ResourceKeyString.of("mb/ministr/src-gen/statix");
+        ClassLoaderResource miniSdfSpec = MStrClassloaderResources
             .createClassLoaderResourceRegistry()
-            .getResource(miniStrSpecPath);
+            .getResource(miniSdfSpecPath);
 
         SpecBuilder spec;
         try {
-            spec = SpecUtils.loadSpec(miniStrSpec, "mini-str/mini-str-typing", miniStr.termFactory());
+            spec = SpecUtils.loadSpec(miniSdfSpec, "mini-str/mini-str-typing", miniStr.termFactory());
         } catch(IOException e) {
             throw new SpecLoadException(e);
         }
@@ -63,8 +62,8 @@ public class MiniStrMetadataProvider implements LanguageMetadataProvider {
                 .mapInput((exec, key) ->  miniStr.indexAst().createSupplier(key)))
             .postTransform(miniStr.postStatix().createFunction())
             .languageId(new LanguageId("mb.ministr"))
-            .addAllTaskDefs(component.getTaskDefs())
-            .addResourceRegistries(MStrClassloaderResources.createClassLoaderResourceRegistry())
+            .languagePie(component.languagePie())
+            .termFactory(component.getStrategoRuntime().getTermFactory())
             .statixSpec(spec)
             .fileConstraint("mini-str/mini-str-typing!mstrProgramOK")
             .projectConstraint("mini-str/mini-str-typing!mstrProjectOK")
@@ -72,8 +71,16 @@ public class MiniStrMetadataProvider implements LanguageMetadataProvider {
     }
 
     @Override
-    public Iterable<Map.Entry<LanguageId, Supplier<LanguageMetadata>>> getLanguageMetadatas() {
-        return Iterables2.singleton(new AbstractMap.SimpleEntry<>(
-            new LanguageId("mb.ministr"), this::getLanguageMetadata));
+    public Map<LanguageId, Supplier<LanguageMetadata>> getLanguageMetadataSuppliers() {
+        Map<LanguageId, Supplier<LanguageMetadata>> result = new HashMap<>();
+        result.put(new LanguageId("mb.ministr"), this::getLanguageMetadata);
+        return result;
+    }
+
+    @Override
+    public Map<LanguageId, ContextId> getDefaultLanguageContexts() {
+        Map<LanguageId, ContextId> result = new HashMap<>();
+        result.put(new LanguageId("mb.ministr"), new ContextId("mini-sdf-str"));
+        return result;
     }
 }

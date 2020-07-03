@@ -16,6 +16,7 @@ import mb.ministr.spoofax.task.MStrIndexAst;
 import mb.ministr.spoofax.task.MStrParse;
 import mb.ministr.spoofax.task.MStrPostStatix;
 import mb.ministr.spoofax.task.MStrPreStatix;
+import mb.ministr.spoofax.task.MStrSmlCheck;
 import mb.ministr.spoofax.task.MStrStyle;
 import mb.pie.api.Task;
 import mb.resource.ResourceKey;
@@ -27,12 +28,11 @@ import mb.spoofax.core.language.cli.CliParam;
 import mb.spoofax.core.language.command.AutoCommandRequest;
 import mb.spoofax.core.language.command.CommandDef;
 import mb.spoofax.core.language.menu.MenuItem;
-import mb.statix.multilang.AnalysisContext;
 import mb.statix.multilang.AnalysisContextService;
 import mb.statix.multilang.ContextId;
 import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.MultiLangConfig;
-import mb.statix.multilang.tasks.SmlBuildMessages;
+import mb.statix.multilang.pie.SmlBuildMessages;
 import mb.statix.multilang.utils.ContextUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spoofax.interpreter.terms.ITermFactory;
@@ -48,7 +48,7 @@ public class MiniStrInstance implements LanguageInstance {
     private final MStrIdeTokenize tokenize;
     private final MStrComplete complete;
 
-    private final SmlBuildMessages analyze;
+    private final MStrSmlCheck check;
     private final MStrPreStatix preStatix;
     private final MStrPostStatix postStatix;
     private final MStrIndexAst indexAst;
@@ -61,7 +61,7 @@ public class MiniStrInstance implements LanguageInstance {
 
     @Inject public MiniStrInstance(
         MStrParse parse,
-        SmlBuildMessages analyze,
+        MStrSmlCheck check,
         MStrStyle style,
         MStrIdeTokenize tokenize,
         MStrComplete complete,
@@ -72,7 +72,7 @@ public class MiniStrInstance implements LanguageInstance {
         AnalysisContextService analysisContextService,
         MStrIndexAst indexAst, ResourceService resourceService) {
         this.parse = parse;
-        this.analyze = analyze;
+        this.check = check;
         this.style = style;
         this.tokenize = tokenize;
         this.complete = complete;
@@ -107,11 +107,7 @@ public class MiniStrInstance implements LanguageInstance {
 
     @Override
     public Task<@Nullable KeyedMessages> createCheckTask(ResourcePath projectRoot) {
-        MultiLangConfig config = ContextUtils.readYamlConfig(resourceService, projectRoot);
-        ContextId contextId = config.getLanguageContexts()
-            .getOrDefault(new LanguageId("mb.ministr"), new ContextId("mini-sdf-str"));
-        AnalysisContext context = analysisContextService.getAnalysisContext(contextId);
-        return analyze.createTask(new SmlBuildMessages.Input(projectRoot, context));
+        return check.createTask(projectRoot);
     }
 
     @Override public CollectionView<CommandDef<?>> getCommandDefs() {
