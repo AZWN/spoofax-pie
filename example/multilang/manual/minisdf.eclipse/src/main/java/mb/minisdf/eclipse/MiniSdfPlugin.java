@@ -15,36 +15,44 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MiniSdfPlugin extends AbstractUIPlugin {
     public static final String pluginId = "minisdf.eclipse";
 
-    private static @Nullable MiniSdfEclipseComponent component;
+    private static final AtomicReference<MiniSdfEclipseComponent> component = new AtomicReference<>();
+    private static volatile boolean started = false;
 
+    // Synchronized to prevent double instantiation. Safe because
     public static MiniSdfEclipseComponent getComponent() {
-        if(component == null) {
+        if(!started) {
             throw new RuntimeException(
                 "Cannot access MiniSdfComponent; MiniSdfPlugin has not been started yet, or has been stopped");
         }
-        return component;
+        return component.updateAndGet(component -> {
+            if(component == null) {
+                component = DaggerMiniSdfEclipseComponent
+                    .builder()
+                    .platformComponent(SpoofaxPlugin.getComponent())
+                    .multiLangComponent(MultiLangPlugin.getComponent())
+                    .miniSdfModule(new MiniSdfModule())
+                    .miniSdfEclipseModule(new MiniSdfEclipseModule())
+                    .build();
+
+                component.getEditorTracker().register();
+            }
+            return component;
+        });
     }
 
     @Override public void start(@NonNull BundleContext context) throws Exception {
         super.start(context);
-        component = DaggerMiniSdfEclipseComponent
-            .builder()
-            .platformComponent(SpoofaxPlugin.getComponent())
-            .multiLangComponent(MultiLangPlugin.getComponent())
-            .miniSdfModule(new MiniSdfModule())
-            .miniSdfEclipseModule(new MiniSdfEclipseModule())
-            .build();
-
-        component.getEditorTracker().register();
+        started = true;
 
         new WorkspaceJob("MiniSdf startup") {
             @Override public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
                 try {
-                    SpoofaxPlugin.getComponent().getPieRunner().startup(component, monitor);
+                    SpoofaxPlugin.getComponent().getPieRunner().startup(getComponent(), monitor);
                 } catch(IOException | ExecException | InterruptedException e) {
                     throw new CoreException(StatusUtil.error("MiniSdf startup job failed unexpectedly", e));
                 }
@@ -56,5 +64,7 @@ public class MiniSdfPlugin extends AbstractUIPlugin {
 
     @Override public void stop(@NonNull BundleContext context) throws Exception {
         super.stop(context);
+        component.set(null);
+        started = false;
     }
 }

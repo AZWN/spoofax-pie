@@ -15,46 +15,53 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MiniStrPlugin extends AbstractUIPlugin {
     public static final String pluginId = "ministr.eclipse";
 
-    private static @Nullable MiniStrEclipseComponent component;
+    private static final AtomicReference<MiniStrEclipseComponent> component = new AtomicReference<>();
+    private static volatile boolean started = false;
 
-    public static MiniStrEclipseComponent getComponent() {
-        if(component == null) {
-            throw new RuntimeException(
-                "Cannot access MiniStrComponent; MiniStrPlugin has not been started yet, or has been stopped");
+    public synchronized static MiniStrEclipseComponent getComponent() {
+        if(!started) {
+            throw new RuntimeException("Cannot access MiniStrComponent; MiniStrPlugin has not been started yet, or has been stopped");
         }
-        return component;
+        return component.updateAndGet(component -> {
+            if(component == null) {
+                // Lazy initialize to prevent synchronization issues with MultiLang extension point initialization
+                component = DaggerMiniStrEclipseComponent
+                    .builder()
+                    .platformComponent(SpoofaxPlugin.getComponent())
+                    .multiLangComponent(MultiLangPlugin.getComponent())
+                    .miniStrModule(new MiniStrModule())
+                    .miniStrEclipseModule(new MiniStrEclipseModule())
+                    .build();
+                component.getEditorTracker().register();
+            }
+            return component;
+        });
     }
 
     @Override public void start(@NonNull BundleContext context) throws Exception {
         super.start(context);
-        component = DaggerMiniStrEclipseComponent
-            .builder()
-            .platformComponent(SpoofaxPlugin.getComponent())
-            .multiLangComponent(MultiLangPlugin.getComponent())
-            .miniStrModule(new MiniStrModule())
-            .miniStrEclipseModule(new MiniStrEclipseModule())
-            .build();
-
-        component.getEditorTracker().register();
+        started = true;
 
         new WorkspaceJob("MiniStr startup") {
             @Override public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
                 try {
-                    SpoofaxPlugin.getComponent().getPieRunner().startup(component, monitor);
+                    SpoofaxPlugin.getComponent().getPieRunner().startup(getComponent(), monitor);
                 } catch(IOException | ExecException | InterruptedException e) {
                     throw new CoreException(StatusUtil.error("MiniStr startup job failed unexpectedly", e));
                 }
                 return StatusUtil.success();
             }
         }.schedule();
-
     }
 
     @Override public void stop(@NonNull BundleContext context) throws Exception {
         super.stop(context);
+        component.set(null);
+        started = false;
     }
 }
