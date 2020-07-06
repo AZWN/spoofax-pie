@@ -31,8 +31,11 @@ import mb.spoofax.core.language.LanguageInstance;
 import mb.spoofax.core.language.LanguageScope;
 import mb.spoofax.core.language.command.AutoCommandRequest;
 import mb.spoofax.core.language.command.CommandDef;
+import mb.spoofax.core.pie.PieProvider;
 import mb.spoofax.core.platform.Platform;
+import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.MultiLang;
+import mb.statix.multilang.SharedPieProvider;
 import mb.statix.multilang.pie.SmlAnalyzeProject;
 import mb.statix.multilang.pie.SmlBuildContextConfiguration;
 import mb.statix.multilang.pie.SmlBuildMessages;
@@ -212,6 +215,16 @@ public class MiniStrModule {
     @Provides @LanguageScope
     static Pie providePie(@Platform Pie pie, TaskDefs taskDefs, ResourceService resourceService) {
         return pie.createChildBuilder().withTaskDefs(taskDefs).withResourceService(resourceService).build();
+    }
+
+    @Provides @LanguageScope
+    static LanguageId provideLanguageId() {
+        return new LanguageId("mb.ministr");
+    }
+
+    @Provides @LanguageScope
+    static PieProvider providePieProvider(SharedPieProvider pieProvider) {
+        return pieProvider;
     }
 
     @Provides @LanguageScope @ElementsIntoSet
