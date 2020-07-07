@@ -5,6 +5,7 @@ import mb.pie.api.ExecException;
 import mb.spoofax.eclipse.SpoofaxPlugin;
 import mb.spoofax.eclipse.util.StatusUtil;
 import mb.statix.multilang.eclipse.MultiLangPlugin;
+import mb.statix.multilang.eclipse.UpdateAnalysisConfigChangeListener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.core.resources.WorkspaceJob;
@@ -21,6 +22,7 @@ public class MiniStrPlugin extends AbstractUIPlugin {
     public static final String pluginId = "ministr.eclipse";
 
     private static final AtomicReference<MiniStrEclipseComponent> component = new AtomicReference<>();
+    private static @Nullable UpdateAnalysisConfigChangeListener configListener;
     private static volatile boolean started = false;
 
     public synchronized static MiniStrEclipseComponent getComponent() {
@@ -38,6 +40,8 @@ public class MiniStrPlugin extends AbstractUIPlugin {
                     .miniStrEclipseModule(new MiniStrEclipseModule())
                     .build();
                 component.getEditorTracker().register();
+                configListener = new UpdateAnalysisConfigChangeListener(component);
+                MultiLangPlugin.getConfigResourceChangeListener().addDelegate(configListener);
             }
             return component;
         });
@@ -61,6 +65,10 @@ public class MiniStrPlugin extends AbstractUIPlugin {
 
     @Override public void stop(@NonNull BundleContext context) throws Exception {
         super.stop(context);
+        if(configListener != null) {
+            MultiLangPlugin.getConfigResourceChangeListener().removeDelegate(configListener);
+        }
+        configListener = null;
         component.set(null);
         started = false;
     }

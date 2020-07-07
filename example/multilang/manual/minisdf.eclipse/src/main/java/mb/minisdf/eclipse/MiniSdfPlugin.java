@@ -5,6 +5,7 @@ import mb.pie.api.ExecException;
 import mb.spoofax.eclipse.SpoofaxPlugin;
 import mb.spoofax.eclipse.util.StatusUtil;
 import mb.statix.multilang.eclipse.MultiLangPlugin;
+import mb.statix.multilang.eclipse.UpdateAnalysisConfigChangeListener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.core.resources.WorkspaceJob;
@@ -21,6 +22,7 @@ public class MiniSdfPlugin extends AbstractUIPlugin {
     public static final String pluginId = "minisdf.eclipse";
 
     private static final AtomicReference<MiniSdfEclipseComponent> component = new AtomicReference<>();
+    private static @Nullable UpdateAnalysisConfigChangeListener configListener;
     private static volatile boolean started = false;
 
     // Synchronized to prevent double instantiation. Safe because
@@ -40,6 +42,8 @@ public class MiniSdfPlugin extends AbstractUIPlugin {
                     .build();
 
                 component.getEditorTracker().register();
+                configListener = new UpdateAnalysisConfigChangeListener(component);
+                MultiLangPlugin.getConfigResourceChangeListener().addDelegate(configListener);
             }
             return component;
         });
@@ -64,6 +68,10 @@ public class MiniSdfPlugin extends AbstractUIPlugin {
 
     @Override public void stop(@NonNull BundleContext context) throws Exception {
         super.stop(context);
+        if(configListener != null) {
+            MultiLangPlugin.getConfigResourceChangeListener().removeDelegate(configListener);
+        }
+        configListener = null;
         component.set(null);
         started = false;
     }
