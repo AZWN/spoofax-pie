@@ -7,6 +7,7 @@ import mb.statix.multilang.AnalysisContextService;
 import mb.statix.multilang.ContextConfig;
 import mb.statix.multilang.ContextId;
 import mb.statix.multilang.LanguageId;
+import mb.statix.multilang.MultiLangAnalysisException;
 import mb.statix.multilang.MultiLangConfig;
 import mb.statix.multilang.MultiLangScope;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -15,6 +16,7 @@ import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @MultiLangScope
@@ -26,6 +28,26 @@ public class SmlBuildContextConfiguration implements TaskDef<SmlBuildContextConf
         public Input(ResourcePath projectDir, LanguageId languageId) {
             this.projectDir = projectDir;
             this.languageId = languageId;
+        }
+
+        @Override public boolean equals(Object o) {
+            if(this == o) return true;
+            if(o == null || getClass() != o.getClass()) return false;
+            Input input = (Input)o;
+            return projectDir.equals(input.projectDir) &&
+                languageId.equals(input.languageId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(projectDir, languageId);
+        }
+
+        @Override public String toString() {
+            return "Input{" +
+                "projectDir=" + projectDir +
+                ", languageId=" + languageId +
+                '}';
         }
     }
 
@@ -44,6 +66,26 @@ public class SmlBuildContextConfiguration implements TaskDef<SmlBuildContextConf
 
         public ContextConfig getContextConfig() {
             return contextConfig;
+        }
+
+        @Override public boolean equals(Object o) {
+            if(this == o) return true;
+            if(o == null || getClass() != o.getClass()) return false;
+            Output output = (Output)o;
+            return contextId.equals(output.contextId) &&
+                contextConfig.equals(output.contextConfig);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(contextId, contextConfig);
+        }
+
+        @Override public String toString() {
+            return "Output{" +
+                "contextId=" + contextId +
+                ", contextConfig=" + contextConfig +
+                '}';
         }
     }
 
@@ -85,6 +127,15 @@ public class SmlBuildContextConfiguration implements TaskDef<SmlBuildContextConf
             languages.addAll(staticLanguages);
             contextConfig.setLanguages(new ArrayList<>(languages));
             contextConfig.setLogLevel(dynamicConfig.getLogLevel());
+        }
+
+        if(!contextConfig.getLanguages().contains(input.languageId)) {
+            throw new MultiLangAnalysisException("Invalid configuration. In project '"
+                + input.projectDir
+                + "', language " + input.languageId
+                + "has configured to do analysis in context " + contextId
+                + ", but it is not included in the configuration for that context. "
+                + "Included languages: " + contextConfig.getLanguages());
         }
 
         return new Output(contextId, contextConfig);
