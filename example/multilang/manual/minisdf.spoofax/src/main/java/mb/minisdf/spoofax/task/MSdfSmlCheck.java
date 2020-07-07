@@ -67,7 +67,6 @@ public class MSdfSmlCheck implements TaskDef<ResourcePath, KeyedMessages> {
             builder.addMessages(session.require(buildMessages.createTask(new SmlBuildMessages.Input(
                 projectPath,
                 languageIds,
-                contextInfo.getContextId(),
                 contextInfo.getContextConfig().parseLevel()
             ))));
         }
