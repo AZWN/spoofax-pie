@@ -4,10 +4,10 @@ imports
 
   Common
 
-sorts
+lexical sorts
   MODNAME KW ID
 
-sorts
+context-free sorts
   MSDFStart MSDFSection
   SortTerm SortRef
   ProdTerm Production

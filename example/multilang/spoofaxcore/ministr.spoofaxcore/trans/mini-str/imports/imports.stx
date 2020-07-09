@@ -21,7 +21,7 @@ rules
 
   strImportOk : scope * MOD
 
-  strImportOk(s, MOD-LEX2MOD(n)) :-
+  strImportOk(s, n) :-
     import(s, n, STRMod()).
 
 rules

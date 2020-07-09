@@ -1,6 +1,7 @@
 package mb.minisdf;
 
-import mb.jsglr1.common.JSGLR1ParseResult;
+import mb.jsglr1.common.JSGLR1ParseException;
+import mb.jsglr1.common.JSGLR1ParseOutput;
 import mb.jsglr1.common.JSGLR1Parser;
 import mb.resource.ResourceKey;
 import mb.spoofax.compiler.interfaces.spoofaxcore.Parser;
@@ -14,12 +15,12 @@ public class MSdfParser implements Parser {
     }
 
     @Override
-    public JSGLR1ParseResult parse(String text, String startSymbol) throws InterruptedException {
+    public JSGLR1ParseOutput parse(String text, String startSymbol) throws InterruptedException, JSGLR1ParseException {
         return parser.parse(text, startSymbol, null);
     }
 
     @Override
-    public JSGLR1ParseResult parse(String text, String startSymbol, @Nullable ResourceKey resource) throws InterruptedException {
+    public JSGLR1ParseOutput parse(String text, String startSymbol, @Nullable ResourceKey resource) throws InterruptedException, JSGLR1ParseException {
         return parser.parse(text, startSymbol, resource);
     }
 }

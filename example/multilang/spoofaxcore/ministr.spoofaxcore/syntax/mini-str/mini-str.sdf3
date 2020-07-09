@@ -3,11 +3,11 @@ module mini-str/mini-str
 imports
   Common
 
-sorts
+lexical sorts
   MOD
   SMBL
 
-sorts
+context-free sorts
   MSTRStart MSTRSection SignatureSection
   ConstructorDef ArgSort
   RuleDef With Pattern Strategy

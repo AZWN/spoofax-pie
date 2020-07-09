@@ -19,7 +19,7 @@ rules
 rules
 
   msdfProgramOK : scope * MSDFStart
-  msdfProgramOK(s, MSDFModule(MODNAME-LEX2MODNAME(n), sec)) :- {s_mod}
+  msdfProgramOK(s, MSDFModule(n, sec)) :- {s_mod}
 	new s_mod,
 	s_mod -P-> s,
     declareMod(s, n, s_mod, SDFMod()),

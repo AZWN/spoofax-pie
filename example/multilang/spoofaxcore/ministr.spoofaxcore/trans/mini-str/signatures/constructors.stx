@@ -14,11 +14,11 @@ rules
 
   consOk: scope * ConstructorDef
 
-  consOk(s, NoArgs(SMBL-LEX2SMBL(cn), SMBL-LEX2SMBL(sn))) :- {T}
+  consOk(s, NoArgs(cn, sn)) :- {T}
     typeOfSort(s, sn) == T,
     declareCons(s, T, cn, []).
 
-  consOk(s, WithArgs(SMBL-LEX2SMBL(cn), p, SMBL-LEX2SMBL(sn))) :- {T T1}
+  consOk(s, WithArgs(cn, p, sn)) :- {T T1}
     typeOfSort(s, sn) == T,
     sortsOfParams(s, p) == T1,
     declareCons(s, T, cn, T1).
@@ -29,7 +29,7 @@ rules
 
   sortOfParam: scope * ArgSort -> TYPE
 
-  sortOfParam(s, Sort(SMBL-LEX2SMBL(n))) = typeOfSort(s, n).
-  sortOfParam(s, Opt(SMBL-LEX2SMBL(n)))  = TOPT(typeOfSort(s, n)).
-  sortOfParam(s, Iter(SMBL-LEX2SMBL(n))) = TITER(typeOfSort(s, n)).
-  sortOfParam(s, Star(SMBL-LEX2SMBL(n))) = TSTAR(typeOfSort(s, n)).
+  sortOfParam(s, Sort(n)) = typeOfSort(s, n).
+  sortOfParam(s, Opt(n))  = TOPT(typeOfSort(s, n)).
+  sortOfParam(s, Iter(n)) = TITER(typeOfSort(s, n)).
+  sortOfParam(s, Star(n)) = TSTAR(typeOfSort(s, n)).

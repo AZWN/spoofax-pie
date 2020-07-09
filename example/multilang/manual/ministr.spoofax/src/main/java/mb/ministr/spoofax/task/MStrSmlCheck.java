@@ -2,7 +2,8 @@ package mb.ministr.spoofax.task;
 
 import mb.common.message.KeyedMessages;
 import mb.common.message.KeyedMessagesBuilder;
-import mb.jsglr1.common.JSGLR1ParseResult;
+import mb.common.message.Messages;
+import mb.common.message.Severity;
 import mb.pie.api.ExecContext;
 import mb.pie.api.MixedSession;
 import mb.pie.api.Pie;
@@ -16,6 +17,7 @@ import mb.statix.multilang.pie.SmlBuildContextConfiguration;
 import mb.statix.multilang.pie.SmlBuildMessages;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.util.List;
 
 @LanguageScope
@@ -44,12 +46,14 @@ public class MStrSmlCheck implements TaskDef<ResourcePath, KeyedMessages> {
         analysisContextService.getLanguageMetadata(new LanguageId("mb.ministr"))
             .resourcesSupplier()
             .apply(context, projectPath)
-            .stream()
-            .map(ResourceStringSupplier::new)
-            .map(parse::createTask)
-            .map(context::require)
-            .map(JSGLR1ParseResult::getMessages)
-            .forEach(builder::addMessages);
+            .forEach(resourceKey -> {
+                try {
+                    Messages messages = context.require(parse.createMessagesSupplier(resourceKey));
+                    builder.addMessages(resourceKey, messages);
+                } catch(IOException e) {
+                    builder.addMessage("IO Exception when parsing file", e, Severity.Error, resourceKey);
+                }
+            });
 
         // Aggregate all Analysis Messages
         final SmlBuildContextConfiguration.Output contextInfo = context.require(buildContextConfiguration.createTask(

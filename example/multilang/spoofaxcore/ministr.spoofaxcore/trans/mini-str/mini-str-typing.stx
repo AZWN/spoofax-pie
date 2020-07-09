@@ -20,7 +20,7 @@ rules
 
   mstrProgramOK : scope * MSTRStart
 
-  mstrProgramOK(s, MSTRModule(MOD-LEX2MOD(n), sec)) :- {s_mod}
+  mstrProgramOK(s, MSTRModule(n, sec)) :- {s_mod}
 	new s_mod,
 	s_mod -P-> s,
     declareMod(s, n, s_mod, STRMod()),

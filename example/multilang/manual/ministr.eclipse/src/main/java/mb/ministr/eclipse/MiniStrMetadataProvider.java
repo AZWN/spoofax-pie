@@ -1,8 +1,14 @@
 package mb.ministr.eclipse;
 
+import mb.common.result.Result;
+import mb.jsglr1.common.JSGLR1ParseException;
 import mb.ministr.MStrClassloaderResources;
 import mb.ministr.spoofax.MiniStrComponent;
 import mb.ministr.spoofax.MiniStrInstance;
+import mb.pie.api.ExecContext;
+import mb.pie.api.Function;
+import mb.pie.api.TaskDef;
+import mb.resource.ResourceKey;
 import mb.resource.ResourceKeyString;
 import mb.resource.classloader.ClassLoaderResource;
 import mb.resource.hierarchical.HierarchicalResource;
@@ -18,6 +24,7 @@ import mb.statix.multilang.eclipse.LanguageMetadataProvider;
 import mb.statix.multilang.spec.SpecBuilder;
 import mb.statix.multilang.spec.SpecLoadException;
 import mb.statix.multilang.spec.SpecUtils;
+import org.spoofax.interpreter.terms.IStrategoTerm;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -59,7 +66,8 @@ public class MiniStrMetadataProvider implements LanguageMetadataProvider {
                 }
             })
             .astFunction(miniStr.preStatix().createFunction()
-                .mapInput((exec, key) ->  miniStr.indexAst().createSupplier(key)))
+                .mapInput(new IndexAstMapper(miniStr.indexAst()))
+                .mapOutput((exec, out) -> out.ok()))
             .postTransform(miniStr.postStatix().createFunction())
             .languageId(new LanguageId("mb.ministr"))
             .languagePie(component.languagePie())
@@ -82,5 +90,19 @@ public class MiniStrMetadataProvider implements LanguageMetadataProvider {
         Map<LanguageId, ContextId> result = new HashMap<>();
         result.put(new LanguageId("mb.ministr"), new ContextId("mini-sdf-str"));
         return result;
+    }
+
+    // TODO: Move into library
+    private static class IndexAstMapper implements Function<ResourceKey, mb.pie.api.Supplier<Result<IStrategoTerm, JSGLR1ParseException>>> {
+        private TaskDef<ResourceKey, Result<IStrategoTerm, JSGLR1ParseException>> indexAstTaskDef;
+
+        public IndexAstMapper(TaskDef<ResourceKey, Result<IStrategoTerm, JSGLR1ParseException>> indexAstTaskDef) {
+            this.indexAstTaskDef = indexAstTaskDef;
+        }
+
+        @Override
+        public mb.pie.api.Supplier<Result<IStrategoTerm, JSGLR1ParseException>> apply(ExecContext context, ResourceKey input) {
+            return indexAstTaskDef.createSupplier(input);
+        }
     }
 }

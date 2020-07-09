@@ -1,7 +1,9 @@
 package mb.ministr.spoofax.task;
 
+import mb.common.option.Option;
 import mb.common.style.Styling;
 import mb.common.token.Token;
+import mb.jsglr.common.JSGLRTokens;
 import mb.ministr.MStrStyler;
 import mb.pie.api.ExecContext;
 import mb.pie.api.ExecException;
@@ -14,7 +16,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class MStrStyle implements TaskDef<Supplier<@Nullable ArrayList<? extends Token<IStrategoTerm>>>, @Nullable Styling> {
+public class MStrStyle implements TaskDef<Supplier<Option<JSGLRTokens>>, Option<Styling>>  {
     private final MStrStyler styler;
 
     @Inject public MStrStyle(MStrStyler styler) {
@@ -25,15 +27,7 @@ public class MStrStyle implements TaskDef<Supplier<@Nullable ArrayList<? extends
         return MStrStyle.class.getCanonicalName();
     }
 
-    @Override public @Nullable Styling exec(
-        ExecContext context,
-        Supplier<@Nullable ArrayList<? extends Token<IStrategoTerm>>> tokensSupplier
-    ) throws ExecException, IOException, InterruptedException {
-        final @Nullable ArrayList<? extends Token<IStrategoTerm>> tokens = context.require(tokensSupplier);
-        if(tokens == null) {
-            return null;
-        } else {
-            return styler.style(tokens);
-        }
+    @Override public Option<Styling> exec(ExecContext context, Supplier<Option<JSGLRTokens>> tokensSupplier) throws IOException {
+        return context.require(tokensSupplier).map(t -> styler.style(t.tokens));
     }
 }

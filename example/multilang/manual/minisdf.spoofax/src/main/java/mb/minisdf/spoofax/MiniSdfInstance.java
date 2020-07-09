@@ -1,13 +1,17 @@
 package mb.minisdf.spoofax;
 
 import mb.common.message.KeyedMessages;
+import mb.common.option.Option;
 import mb.common.region.Region;
+import mb.common.result.Result;
 import mb.common.style.Styling;
 import mb.common.token.Token;
+import mb.common.token.Tokens;
 import mb.common.util.CollectionView;
 import mb.common.util.ListView;
 import mb.common.util.SetView;
 import mb.completions.common.CompletionResult;
+import mb.jsglr.common.JSGLRTokens;
 import mb.minisdf.spoofax.command.MSdfShowAnalyzedAstCommand;
 import mb.minisdf.spoofax.task.MSdfComplete;
 import mb.minisdf.spoofax.task.MSdfIdeTokenize;
@@ -90,16 +94,16 @@ public class MiniSdfInstance implements LanguageInstance {
         return extensions;
     }
 
-    @Override public Task<@Nullable ArrayList<? extends Token<?>>> createTokenizeTask(ResourceKey resourceKey) {
+    @Override public Task<Option<JSGLRTokens>> createTokenizeTask(ResourceKey resourceKey) {
         return tokenize.createTask(resourceKey);
     }
 
-    @Override public Task<@Nullable Styling> createStyleTask(ResourceKey resourceKey) {
-        return style.createTask(parse.createTokensSupplier(resourceKey));
+    @Override public Task<Option<Styling>> createStyleTask(ResourceKey resourceKey) {
+        return style.createTask(parse.createRecoverableTokensSupplier(resourceKey).map(Result::ok));
     }
 
     @Override public Task<@Nullable CompletionResult> createCompletionTask(ResourceKey resourceKey, Region primarySelection) {
-        return complete.createTask(new MSdfComplete.Input(parse.createNullableRecoverableAstSupplier(resourceKey)));
+        return complete.createTask(new MSdfComplete.Input(parse.createRecoverableAstSupplier(resourceKey).map(Result::get)));
     }
 
     @Override

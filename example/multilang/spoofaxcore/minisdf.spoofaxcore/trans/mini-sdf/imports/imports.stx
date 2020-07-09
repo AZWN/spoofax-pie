@@ -20,7 +20,7 @@ rules
 
   sdfImportOk : scope * MODNAME
 
-  sdfImportOk(s, MODNAME-LEX2MODNAME(n)) :-
+  sdfImportOk(s, n) :-
     import(s, n, SDFMod()).
 
 rules

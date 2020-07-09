@@ -15,11 +15,11 @@ rules
 
   typeOfBuild : scope * Pattern -> TYPE
 
-  typeOfBuild(s, c@Constr(SMBL-LEX2SMBL(n), p)) = T :-
+  typeOfBuild(s, c@Constr(n, p)) = T :-
     typeOfCons(s, arityOfCons(p), n) == CONS(T, _, _, _),
     ptrnOk(s, BUILD(), c, T).
 
-  typeOfBuild(s, v@Var(SMBL-LEX2SMBL(n))) = T :-
+  typeOfBuild(s, v@Var(n)) = T :-
     typeOfVar(s, n) == T,
     ptrnOk(s, BUILD(), v, T).
 
@@ -27,6 +27,6 @@ rules
     typeOfList(l) == T,
     ptrnOk(s, BUILD(), l, T).
 
-  typeOfBuild(s, c@RuleCall(SMBL-LEX2SMBL(n), _)) = T :-
+  typeOfBuild(s, c@RuleCall(n, _)) = T :-
     resolveRule(s, n) == RULE(_, T),
     ptrnOk(s, BUILD(), c, T).

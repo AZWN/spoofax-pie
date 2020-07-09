@@ -8,7 +8,7 @@ import mb.resource.hierarchical.ResourcePath;
 import mb.spoofax.core.language.command.CommandContextType;
 import mb.spoofax.core.language.command.CommandDef;
 import mb.spoofax.core.language.command.CommandExecutionType;
-import mb.spoofax.core.language.command.CommandOutput;
+import mb.spoofax.core.language.command.CommandFeedback;
 import mb.spoofax.core.language.command.arg.ArgProvider;
 import mb.spoofax.core.language.command.arg.Param;
 import mb.spoofax.core.language.command.arg.ParamDef;
@@ -54,7 +54,7 @@ public class MSdfShowAnalyzedAstCommand implements CommandDef<MSdfShowAnalyzedAs
     }
 
     @Override
-    public Task<CommandOutput> createTask(Args args) {
+    public Task<CommandFeedback> createTask(Args args) {
         return analyzeProject.createTask(args.projectDir);
     }
 

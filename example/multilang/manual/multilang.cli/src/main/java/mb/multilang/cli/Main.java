@@ -2,7 +2,9 @@ package mb.multilang.cli;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import mb.common.result.Result;
 import mb.common.util.SetView;
+import mb.jsglr1.common.JSGLR1ParseException;
 import mb.log.slf4j.SLF4JLoggerFactory;
 import mb.minisdf.MSdfClassloaderResources;
 import mb.minisdf.spoofax.DaggerMiniSdfComponent;
@@ -16,9 +18,14 @@ import mb.ministr.spoofax.DaggerMiniStrComponent;
 import mb.ministr.spoofax.MiniStrComponent;
 import mb.ministr.spoofax.MiniStrInstance;
 import mb.ministr.spoofax.MiniStrModule;
+import mb.pie.api.ExecContext;
+import mb.pie.api.Function;
 import mb.pie.api.MapTaskDefs;
 import mb.pie.api.Pie;
+import mb.pie.api.Supplier;
+import mb.pie.api.TaskDef;
 import mb.pie.runtime.PieBuilderImpl;
+import mb.resource.ResourceKey;
 import mb.resource.ResourceKeyString;
 import mb.resource.classloader.ClassLoaderResource;
 import mb.resource.hierarchical.HierarchicalResource;
@@ -45,8 +52,10 @@ import mb.statix.multilang.spec.SpecBuilder;
 import mb.statix.multilang.spec.SpecUtils;
 import mb.stratego.common.StrategoRuntime;
 import org.metaborg.util.iterators.Iterables2;
+import org.spoofax.interpreter.terms.IStrategoTerm;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -131,7 +140,8 @@ public class Main {
                     }
                 })
                 .astFunction(miniStr.preStatix().createFunction()
-                    .mapInput((exec, key) -> miniStr.indexAst().createSupplier(key)))
+                    .mapInput(new IndexAstMapper(miniStr.indexAst()))
+                    .mapOutput((exec, out) -> out.ok()))
                 .postTransform(miniStr.postStatix().createFunction())
                 .languageId(new LanguageId("mb.ministr"))
                 .statixSpec(specBuilder)
@@ -169,12 +179,27 @@ public class Main {
                     }
                 })
                 .astFunction(miniSdf.preStatix().createFunction()
-                    .mapInput((exec, key) -> miniSdf.indexAst().createSupplier(key)))
+                    .mapInput(new IndexAstMapper(miniSdf.indexAst()))
+                    .mapOutput((exec, out) -> out.ok()))
                 .postTransform(miniSdf.postStatix().createFunction())
                 .languageId(new LanguageId("mb.minisdf"))
                 .statixSpec(specBuilder)
                 .fileConstraint("mini-sdf/mini-sdf-typing!msdfProgramOK")
                 .projectConstraint("mini-sdf/mini-sdf-typing!msdfProjectOK")
                 .build();
+    }
+
+    // TODO: Move into library
+    private static class IndexAstMapper implements Function<ResourceKey, Supplier<Result<IStrategoTerm, JSGLR1ParseException>>> {
+        private final TaskDef<ResourceKey, Result<IStrategoTerm, JSGLR1ParseException>> indexAstTaskDef;
+
+        public IndexAstMapper(TaskDef<ResourceKey, Result<IStrategoTerm, JSGLR1ParseException>> indexAstTaskDef) {
+            this.indexAstTaskDef = indexAstTaskDef;
+        }
+
+        @Override
+        public mb.pie.api.Supplier<Result<IStrategoTerm, JSGLR1ParseException>> apply(ExecContext context, ResourceKey input) {
+            return indexAstTaskDef.createSupplier(input);
+        }
     }
 }

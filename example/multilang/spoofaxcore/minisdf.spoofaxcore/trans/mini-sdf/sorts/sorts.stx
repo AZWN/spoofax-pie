@@ -10,5 +10,5 @@ rules
   sortsOk maps sortOk(*, list(*))
 
   sortOk: scope * ID
-  sortOk(s, ID-LEX2ID(n)) :-
+  sortOk(s, n) :-
     declareSort(s, n).

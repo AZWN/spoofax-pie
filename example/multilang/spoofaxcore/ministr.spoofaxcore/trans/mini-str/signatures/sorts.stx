@@ -12,6 +12,6 @@ rules
 
   sortOk: scope * SMBL
 
-  sortOk(s, SMBL-LEX2SMBL(n)) :-
+  sortOk(s, n) :-
   	// Declare sort in module root scope
   	declareSort(s, n).

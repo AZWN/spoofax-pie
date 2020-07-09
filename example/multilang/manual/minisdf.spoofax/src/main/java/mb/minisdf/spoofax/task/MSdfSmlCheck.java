@@ -2,21 +2,27 @@ package mb.minisdf.spoofax.task;
 
 import mb.common.message.KeyedMessages;
 import mb.common.message.KeyedMessagesBuilder;
-import mb.jsglr1.common.JSGLR1ParseResult;
+import mb.common.message.Message;
+import mb.common.message.Messages;
+import mb.common.message.Severity;
 import mb.pie.api.ExecContext;
 import mb.pie.api.MixedSession;
 import mb.pie.api.Pie;
 import mb.pie.api.ResourceStringSupplier;
+import mb.pie.api.Supplier;
 import mb.pie.api.TaskDef;
 import mb.resource.hierarchical.ResourcePath;
 import mb.spoofax.core.language.LanguageScope;
 import mb.statix.multilang.AnalysisContextService;
 import mb.statix.multilang.LanguageId;
+import mb.statix.multilang.MultiLangAnalysisException;
 import mb.statix.multilang.pie.SmlBuildContextConfiguration;
 import mb.statix.multilang.pie.SmlBuildMessages;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.util.List;
+import java.util.function.Function;
 
 @LanguageScope
 public class MSdfSmlCheck implements TaskDef<ResourcePath, KeyedMessages> {
@@ -44,12 +50,14 @@ public class MSdfSmlCheck implements TaskDef<ResourcePath, KeyedMessages> {
         analysisContextService.getLanguageMetadata(new LanguageId("mb.minisdf"))
             .resourcesSupplier()
             .apply(context, projectPath)
-            .stream()
-            .map(ResourceStringSupplier::new)
-            .map(parse::createTask)
-            .map(context::require)
-            .map(JSGLR1ParseResult::getMessages)
-            .forEach(builder::addMessages);
+            .forEach(resourceKey -> {
+                try {
+                    Messages messages = context.require(parse.createMessagesSupplier(resourceKey));
+                    builder.addMessages(resourceKey, messages);
+                } catch(IOException e) {
+                    builder.addMessage("IO Exception when parsing file", e, Severity.Error, resourceKey);
+                }
+            });
 
         // Aggregate all Analysis Messages
         final SmlBuildContextConfiguration.Output contextInfo = context.require(buildContextConfiguration.createTask(
@@ -71,5 +79,13 @@ public class MSdfSmlCheck implements TaskDef<ResourcePath, KeyedMessages> {
             ))));
         }
         return builder.build();
+    }
+
+    private Messages getMessages(ExecContext context, Supplier<Messages> msgSupplier) {
+        try {
+            return context.require(msgSupplier);
+        } catch(IOException e) {
+            throw new MultiLangAnalysisException(e);
+        }
     }
 }

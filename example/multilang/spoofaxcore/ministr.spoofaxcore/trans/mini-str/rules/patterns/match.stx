@@ -14,11 +14,11 @@ rules
 
   typeOfMatch : scope * Pattern -> TYPE
 
-  typeOfMatch(s, c@Constr(SMBL-LEX2SMBL(n), p)) = T :-
+  typeOfMatch(s, c@Constr(n, p)) = T :-
     typeOfCons(s, arityOfCons(p), n) == CONS(T, _, _, _),
     ptrnOk(s, MATCH(), c, T).
 
-  typeOfMatch(s, v@Var(SMBL-LEX2SMBL(n))) = T :-
+  typeOfMatch(s, v@Var(n)) = T :-
     typeOfVar(s, n) == T,
     ptrnOk(s, MATCH(), v, T).
 

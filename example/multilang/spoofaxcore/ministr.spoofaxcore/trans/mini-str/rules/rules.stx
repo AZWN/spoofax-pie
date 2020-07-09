@@ -16,7 +16,7 @@ rules
   rulesOk maps ruleOk(*, list(*))
 
   ruleOk: scope * RuleDef
-  ruleOk(s_root, RewriteRuleDef(SMBL-LEX2SMBL(n), m, b, w)) :-
+  ruleOk(s_root, RewriteRuleDef(n, m, b, w)) :-
     {s_match s_build s_with T1 T2}
       new s_match s_build s_with,
       s_match -P-> s_root,
@@ -40,7 +40,7 @@ rules
 
   strategyOk : scope * scope * Strategy
 
-  strategyOk (s_match, s_decl, Assign(SMBL-LEX2SMBL(n), p)) :- {T}
+  strategyOk (s_match, s_decl, Assign(n, p)) :- {T}
     s_decl -P-> s_match,
     typeOfBuild(s_match, p) == T,
     declareVar(s_decl, n, T).

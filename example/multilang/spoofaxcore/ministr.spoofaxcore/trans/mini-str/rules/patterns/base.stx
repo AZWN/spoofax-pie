@@ -28,7 +28,7 @@ rules
 
   ptrnOk : scope * PATTERN * Pattern * TYPE
 
-  ptrnOk(s, pt, Constr(SMBL-LEX2SMBL(n), p), T) :- {T1 T2}
+  ptrnOk(s, pt, Constr(n, p), T) :- {T1 T2}
     typeOfCons(s, arityOfCons(p), n) == CONS(T1, T2, _, _),
     ptrnsOk(s, pt, p, T2),
     typeEq(T, T1)
@@ -39,14 +39,14 @@ rules
     typeEq(T1, T),
     lptrnOk(s, pt, i, typeOfContent(T)).
 
-  ptrnOk(s, pt, c@RuleCall(SMBL-LEX2SMBL(n), op), T) :- {T1 T2}
+  ptrnOk(s, pt, c@RuleCall(n, op), T) :- {T1 T2}
     resolveRule(s, n) == RULE(T1, T2),
     ptrnOk(s, pt, op, T1),
     typeEq(T, T2).
 
-  ptrnOk(s, MATCH(), Var(SMBL-LEX2SMBL(n)), T) :-
+  ptrnOk(s, MATCH(), Var(n), T) :-
     declareVar(s, n, T).
 
-  ptrnOk(s, BUILD(), Var(SMBL-LEX2SMBL(n)), T) :- {T1}
+  ptrnOk(s, BUILD(), Var(n), T) :- {T1}
     typeOfVar(s, n) == T1,
     typeEq(T, T1) | error $[Expected variable of sort [T], but was [T1]] @n.
