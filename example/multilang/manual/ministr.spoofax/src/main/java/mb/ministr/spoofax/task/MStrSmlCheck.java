@@ -8,7 +8,6 @@ import mb.common.result.Result;
 import mb.pie.api.ExecContext;
 import mb.pie.api.MixedSession;
 import mb.pie.api.Pie;
-import mb.pie.api.ResourceStringSupplier;
 import mb.pie.api.Task;
 import mb.pie.api.TaskDef;
 import mb.resource.hierarchical.ResourcePath;

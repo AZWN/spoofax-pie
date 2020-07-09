@@ -2,15 +2,12 @@ package mb.minisdf.spoofax.task;
 
 import mb.common.message.KeyedMessages;
 import mb.common.message.KeyedMessagesBuilder;
-import mb.common.message.Message;
 import mb.common.message.Messages;
 import mb.common.message.Severity;
 import mb.common.result.Result;
 import mb.pie.api.ExecContext;
 import mb.pie.api.MixedSession;
 import mb.pie.api.Pie;
-import mb.pie.api.ResourceStringSupplier;
-import mb.pie.api.Supplier;
 import mb.pie.api.Task;
 import mb.pie.api.TaskDef;
 import mb.resource.hierarchical.ResourcePath;
@@ -25,7 +22,6 @@ import mb.statix.multilang.pie.TaskUtils;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Function;
 
 @LanguageScope
 public class MSdfSmlCheck implements TaskDef<ResourcePath, KeyedMessages> {
