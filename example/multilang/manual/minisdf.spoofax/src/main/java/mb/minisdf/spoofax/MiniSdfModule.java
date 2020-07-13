@@ -56,6 +56,7 @@ import mb.statix.multilang.pie.config.SmlReadConfigYaml;
 import mb.statix.multilang.spec.SpecBuilder;
 import mb.statix.multilang.spec.SpecLoadException;
 import mb.statix.multilang.spec.SpecUtils;
+import mb.statix.multilang.utils.MetadataUtils;
 import mb.stratego.common.StrategoRuntime;
 import mb.stratego.common.StrategoRuntimeBuilder;
 import org.spoofax.interpreter.terms.ITermFactory;
@@ -270,48 +271,16 @@ public class MiniSdfModule {
         Pie languagePie
     ) {
         ITermFactory termFactory = strategoRuntime.getTermFactory();
-
-        ResourceKeyString miniSdfSpecPath = ResourceKeyString.of("mb/minisdf/src-gen/statix");
-        ClassLoaderResource miniSdfSpec = MSdfClassloaderResources
-            .createClassLoaderResourceRegistry()
-            .getResource(miniSdfSpecPath);
-
-        SpecBuilder spec;
-        try {
-            spec = SpecUtils.loadSpec(miniSdfSpec, "mini-sdf/mini-sdf-typing", termFactory);
-        } catch(IOException e) {
-            // TODO: Remove RuntimeException
-            throw new RuntimeException(new SpecLoadException(e));
-        }
-
         return ImmutableLanguageMetadata.builder()
-            .resourcesSupplier((exec, projectDir) -> {
-                HierarchicalResource res = exec.getHierarchicalResource(projectDir);
-                try {
-                    return res.walk(
-                        new PathResourceWalker(new NoHiddenPathMatcher()),
-                        new PathResourceMatcher(new ExtensionsPathMatcher("msdf")))
-                        .map(HierarchicalResource::getKey)
-                        .collect(Collectors.toCollection(HashSet::new));
-                } catch(IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-            })
+            .resourcesSupplier(MetadataUtils.resourcesSupplierForExtensions("msdf"))
             .astFunction(preStatix.createFunction().mapInput(indexAst::createSupplier))
-            .postTransform(postStatix.createFunction().mapInput(new IdentityMapper<>())) // Needed for typing
+            .postTransform(postStatix.createFunction().mapInput((exec, i) -> i)) // mapInput needed for typing
             .languageId(new LanguageId("mb.minisdf"))
             .languagePie(languagePie)
             .termFactory(termFactory)
-            .statixSpec(spec)
+            .statixSpec(MetadataUtils.loadSpec(MSdfClassloaderResources.defaultDefinitionDir(), termFactory, "mini-sdf/mini-sdf-typing"))
             .fileConstraint("mini-sdf/mini-sdf-typing!msdfProgramOK")
             .projectConstraint("mini-sdf/mini-sdf-typing!msdfProjectOK")
             .build();
-    }
-
-    private static class IdentityMapper<I extends Serializable> implements Function<I, I> {
-        @Override
-        public I apply(ExecContext context, I input) {
-            return input;
-        }
     }
 }

@@ -12,4 +12,8 @@ public class MStrClassloaderResources {
     public static ClassLoaderResource createDefinitionDir(ClassLoaderResourceRegistry classLoaderResourceRegistry) {
         return classLoaderResourceRegistry.getResource(ResourceKeyString.of("mb/ministr/"));
     }
+
+    public static ClassLoaderResource defaultDefinitionDir() {
+        return createDefinitionDir(createClassLoaderResourceRegistry());
+    }
 }
