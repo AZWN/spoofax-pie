@@ -46,6 +46,7 @@ import mb.statix.multilang.DaggerMultiLangComponent;
 import mb.statix.multilang.ImmutableLanguageMetadata;
 import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.LanguageMetadata;
+import mb.statix.multilang.MultiLangAnalysisException;
 import mb.statix.multilang.MultiLangComponent;
 import mb.statix.multilang.MultiLangModule;
 import mb.statix.multilang.spec.SpecBuilder;
@@ -65,7 +66,7 @@ public class Main {
     public static MiniSdfComponent miniSdfComponent;
     public static MiniStrComponent miniStrComponent;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws MultiLangAnalysisException {
         SpoofaxCliComponent platformComponent = DaggerSpoofaxCliComponent.builder()
             .platformPieModule(new PlatformPieModule(PieBuilderImpl::new))
             .loggerFactoryModule(new LoggerFactoryModule(new SLF4JLoggerFactory()))

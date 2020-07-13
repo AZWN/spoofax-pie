@@ -49,7 +49,8 @@ public class MiniSdfMetadataProvider implements LanguageMetadataProvider {
         try {
             spec = SpecUtils.loadSpec(miniSdfSpec, "mini-sdf/mini-sdf-typing", miniSdf.termFactory());
         } catch(IOException e) {
-            throw new SpecLoadException(e);
+            // TODO: Remove RuntimeException
+            throw new RuntimeException(new SpecLoadException(e));
         }
 
         return ImmutableLanguageMetadata.builder()

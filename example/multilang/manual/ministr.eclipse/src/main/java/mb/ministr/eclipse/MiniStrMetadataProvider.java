@@ -49,7 +49,8 @@ public class MiniStrMetadataProvider implements LanguageMetadataProvider {
         try {
             spec = SpecUtils.loadSpec(miniSdfSpec, "mini-str/mini-str-typing", miniStr.termFactory());
         } catch(IOException e) {
-            throw new SpecLoadException(e);
+            // TODO: Remove RuntimeException
+            throw new RuntimeException(new SpecLoadException(e));
         }
 
         return ImmutableLanguageMetadata.builder()
