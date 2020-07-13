@@ -1,34 +1,32 @@
 package mb.ministr.spoofax.task;
 
 import mb.common.result.Result;
-import mb.jsglr1.common.JSGLR1ParseException;
 import mb.pie.api.ExecContext;
 import mb.pie.api.Supplier;
-import mb.pie.api.TaskDef;
-import mb.statix.multilang.MultiLangAnalysisException;
-import mb.statix.multilang.pie.TaskUtils;
-import mb.stratego.common.StrategoException;
 import mb.stratego.common.StrategoRuntime;
+import mb.stratego.pie.AstStrategoTransformTaskDef;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
+import java.io.IOException;
 
-public class MStrPreStatix implements TaskDef<Supplier<Result<IStrategoTerm, JSGLR1ParseException>>, Result<IStrategoTerm, MultiLangAnalysisException>> {
-    private final StrategoRuntime strategoRuntime;
+public class MStrPreStatix extends AstStrategoTransformTaskDef {
 
-    @Inject public MStrPreStatix(StrategoRuntime strategoRuntime) {
-        this.strategoRuntime = strategoRuntime;
+    @Inject public MStrPreStatix(Provider<StrategoRuntime> strategoRuntimeProvider) {
+        super(strategoRuntimeProvider, "pre-analyze");
     }
-
 
     @Override public String getId() {
         return MStrPreStatix.class.getCanonicalName();
     }
 
     @Override
-    public Result<IStrategoTerm, MultiLangAnalysisException> exec(ExecContext context, Supplier<Result<IStrategoTerm, JSGLR1ParseException>> input)  {
-        return TaskUtils.executeWrapped(() -> context.require(input)
-            .mapErr(MultiLangAnalysisException::new)
-            .flatMap(TaskUtils.executeWrapped(ast -> Result.ofOk(strategoRuntime.invoke("pre-analyze", ast)))));
+    public Result<IStrategoTerm, ?> exec(ExecContext context, Supplier<? extends Result<IStrategoTerm, ?>> supplier) {
+        try {
+            return super.exec(context, supplier);
+        } catch(IOException e) {
+            return Result.ofErr(e);
+        }
     }
 }

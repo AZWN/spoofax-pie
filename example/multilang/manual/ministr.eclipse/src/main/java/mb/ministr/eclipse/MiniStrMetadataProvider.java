@@ -26,7 +26,9 @@ import mb.statix.multilang.spec.SpecLoadException;
 import mb.statix.multilang.spec.SpecUtils;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
+import javax.naming.directory.SearchResult;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -67,9 +69,8 @@ public class MiniStrMetadataProvider implements LanguageMetadataProvider {
                 }
             })
             .astFunction(miniStr.preStatix().createFunction()
-                .mapInput(new IndexAstMapper(miniStr.indexAst()))
-                .mapOutput((exec, out) -> out.ok()))
-            .postTransform(miniStr.postStatix().createFunction())
+                .mapInput(miniStr.indexAst()::createSupplier))
+            .postTransform(miniStr.postStatix().createFunction().mapInput(new IdentityMapper<>())) // Needed for typing
             .languageId(new LanguageId("mb.ministr"))
             .languagePie(component.languagePie())
             .termFactory(component.getStrategoRuntime().getTermFactory())
@@ -93,17 +94,10 @@ public class MiniStrMetadataProvider implements LanguageMetadataProvider {
         return result;
     }
 
-    // TODO: Move into library
-    private static class IndexAstMapper implements Function<ResourceKey, mb.pie.api.Supplier<Result<IStrategoTerm, JSGLR1ParseException>>> {
-        private TaskDef<ResourceKey, Result<IStrategoTerm, JSGLR1ParseException>> indexAstTaskDef;
-
-        public IndexAstMapper(TaskDef<ResourceKey, Result<IStrategoTerm, JSGLR1ParseException>> indexAstTaskDef) {
-            this.indexAstTaskDef = indexAstTaskDef;
-        }
-
+    private static class IdentityMapper<I extends Serializable> implements Function<I, I> {
         @Override
-        public mb.pie.api.Supplier<Result<IStrategoTerm, JSGLR1ParseException>> apply(ExecContext context, ResourceKey input) {
-            return indexAstTaskDef.createSupplier(input);
+        public I apply(ExecContext context, I input) {
+            return input;
         }
     }
 }

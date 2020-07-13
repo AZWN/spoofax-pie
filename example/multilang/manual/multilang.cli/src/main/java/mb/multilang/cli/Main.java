@@ -141,9 +141,8 @@ public class Main {
                     }
                 })
                 .astFunction(miniStr.preStatix().createFunction()
-                    .mapInput(new IndexAstMapper(miniStr.indexAst()))
-                    .mapOutput((exec, out) -> out.ok()))
-                .postTransform(miniStr.postStatix().createFunction())
+                    .mapInput(miniStr.indexAst()::createSupplier))
+                .postTransform(miniStr.postStatix().createFunction().mapInput(new IdentityMapper<>())) // Needed for typing
                 .languageId(new LanguageId("mb.ministr"))
                 .statixSpec(specBuilder)
                 .fileConstraint("mini-str/mini-str-typing!mstrProgramOK")
@@ -180,9 +179,8 @@ public class Main {
                     }
                 })
                 .astFunction(miniSdf.preStatix().createFunction()
-                    .mapInput(new IndexAstMapper(miniSdf.indexAst()))
-                    .mapOutput((exec, out) -> out.ok()))
-                .postTransform(miniSdf.postStatix().createFunction())
+                    .mapInput(miniSdf.indexAst()::createSupplier))
+                .postTransform(miniSdf.postStatix().createFunction().mapInput(new IdentityMapper<>())) // Needed for typing
                 .languageId(new LanguageId("mb.minisdf"))
                 .statixSpec(specBuilder)
                 .fileConstraint("mini-sdf/mini-sdf-typing!msdfProgramOK")
@@ -201,6 +199,13 @@ public class Main {
         @Override
         public mb.pie.api.Supplier<Result<IStrategoTerm, JSGLR1ParseException>> apply(ExecContext context, ResourceKey input) {
             return indexAstTaskDef.createSupplier(input);
+        }
+    }
+
+    private static class IdentityMapper<I extends Serializable> implements Function<I, I> {
+        @Override
+        public I apply(ExecContext context, I input) {
+            return input;
         }
     }
 }

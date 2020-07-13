@@ -1,37 +1,31 @@
 package mb.ministr.spoofax.task;
 
-import mb.common.option.Option;
 import mb.common.result.Result;
 import mb.pie.api.ExecContext;
 import mb.pie.api.Supplier;
-import mb.pie.api.TaskDef;
-import mb.statix.multilang.MultiLangAnalysisException;
-import mb.statix.multilang.pie.TaskUtils;
-import mb.stratego.common.StrategoException;
 import mb.stratego.common.StrategoRuntime;
+import mb.stratego.pie.AstStrategoTransformTaskDef;
 import org.spoofax.interpreter.terms.IStrategoTerm;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.io.IOException;
 
-public class MStrPostStatix implements TaskDef<Supplier<Option<IStrategoTerm>>, Option<IStrategoTerm>> {
-    private final StrategoRuntime strategoRuntime;
-
-    @Inject public MStrPostStatix(StrategoRuntime strategoRuntime) {
-        this.strategoRuntime = strategoRuntime;
+public class MStrPostStatix extends AstStrategoTransformTaskDef {
+    @Inject public MStrPostStatix(Provider<StrategoRuntime> strategoRuntimeProvider) {
+        super(strategoRuntimeProvider, "post-analyze");
     }
-
 
     @Override public String getId() {
         return MStrPostStatix.class.getCanonicalName();
     }
 
     @Override
-    public Option<IStrategoTerm> exec(ExecContext context, Supplier<Option<IStrategoTerm>> input) {
-        return TaskUtils.executeWrapped(() -> context.require(input)
-            .mapOrElse(Result::<IStrategoTerm, MultiLangAnalysisException>ofOk,
-                () -> Result.<IStrategoTerm, MultiLangAnalysisException>ofErr(new MultiLangAnalysisException("No ast provided for post transformation")))
-            .flatMap(TaskUtils.executeWrapped((IStrategoTerm ast) -> Result.ofOk(strategoRuntime.invoke("post-analyze", ast))))
-        ).ok();
+    public Result<IStrategoTerm, ?> exec(ExecContext context, Supplier<? extends Result<IStrategoTerm, ?>> supplier) {
+        try {
+            return super.exec(context, supplier);
+        } catch(IOException e) {
+            return Result.ofErr(e);
+        }
     }
 }
