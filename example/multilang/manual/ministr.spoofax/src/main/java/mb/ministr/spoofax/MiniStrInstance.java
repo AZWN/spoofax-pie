@@ -142,10 +142,6 @@ public class MiniStrInstance implements LanguageInstance {
     }
 
     // Additionally provided methods
-    public MStrParse parse() {
-        return this.parse;
-    }
-
     public MStrPreStatix preStatix() { return this.preStatix; }
     public MStrPostStatix postStatix() { return this.postStatix; }
 

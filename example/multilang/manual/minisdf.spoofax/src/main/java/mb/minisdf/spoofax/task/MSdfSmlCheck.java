@@ -15,9 +15,9 @@ import mb.spoofax.core.language.LanguageScope;
 import mb.statix.multilang.AnalysisContextService;
 import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.MultiLangAnalysisException;
-import mb.statix.multilang.pie.SmlBuildContextConfiguration;
 import mb.statix.multilang.pie.SmlBuildMessages;
 import mb.statix.multilang.pie.TaskUtils;
+import mb.statix.multilang.pie.config.SmlBuildContextConfiguration;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -30,7 +30,8 @@ public class MSdfSmlCheck implements TaskDef<ResourcePath, KeyedMessages> {
     private final SmlBuildMessages buildMessages;
     private final AnalysisContextService analysisContextService;
 
-    @Inject public MSdfSmlCheck(MSdfParse parse, SmlBuildContextConfiguration buildContextConfiguration, SmlBuildMessages buildMessages, AnalysisContextService analysisContextService) {
+    @Inject
+    public MSdfSmlCheck(MSdfParse parse, SmlBuildContextConfiguration buildContextConfiguration, SmlBuildMessages buildMessages, AnalysisContextService analysisContextService) {
         this.parse = parse;
         this.buildContextConfiguration = buildContextConfiguration;
         this.buildMessages = buildMessages;

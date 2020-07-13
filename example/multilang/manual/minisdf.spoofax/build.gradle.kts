@@ -15,6 +15,7 @@ dependencies {
   api(project(":minisdf.manual"))
   api(compositeBuild("spoofax.core"))
   api(compositeBuild("jsglr1.pie"))
+  api(compositeBuild("stratego.pie"))
   api(compositeBuild("statix.multilang"))
   api("org.metaborg:pie.api")
   api("org.metaborg:pie.dagger")

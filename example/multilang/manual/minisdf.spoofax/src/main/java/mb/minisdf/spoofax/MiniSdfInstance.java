@@ -136,11 +136,6 @@ public class MiniSdfInstance implements LanguageInstance {
         return ListView.of();
     }
 
-    // Additionally provided methods
-    public MSdfParse parse() {
-        return this.parse;
-    }
-
     public MSdfPreStatix preStatix() { return this.preStatix; }
     public MSdfPostStatix postStatix() { return this.postStatix; }
 
