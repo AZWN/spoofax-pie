@@ -40,6 +40,7 @@ import mb.spoofax.core.language.command.AutoCommandRequest;
 import mb.spoofax.core.language.command.CommandDef;
 import mb.spoofax.core.pie.PieProvider;
 import mb.spoofax.core.platform.Platform;
+import mb.statix.multilang.AnalysisContextService;
 import mb.statix.multilang.ImmutableLanguageMetadata;
 import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.LanguageMetadata;
@@ -259,6 +260,11 @@ public class MiniStrModule {
     @Provides @LanguageScope
     static LanguageInstance provideLanguageInstance(MiniStrInstance miniStrInstance) {
         return miniStrInstance;
+    }
+
+    @Provides @LanguageScope
+    static AnalysisContextService getAnalysisContextService(@MultiLang AnalysisContextService analysisContextService) {
+        return analysisContextService;
     }
 
     @Provides @LanguageScope

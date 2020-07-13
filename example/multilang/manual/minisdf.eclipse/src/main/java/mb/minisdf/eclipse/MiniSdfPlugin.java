@@ -21,37 +21,30 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MiniSdfPlugin extends AbstractUIPlugin {
     public static final String pluginId = "minisdf.eclipse";
 
-    private static final AtomicReference<MiniSdfEclipseComponent> component = new AtomicReference<>();
+    private static @Nullable MiniSdfEclipseComponent component;
     private static @Nullable UpdateAnalysisConfigChangeListener configListener;
-    private static volatile boolean started = false;
 
-    // Synchronized to prevent double instantiation. Safe because
     public static MiniSdfEclipseComponent getComponent() {
-        if(!started) {
+        if(component == null) {
             throw new RuntimeException(
                 "Cannot access MiniSdfComponent; MiniSdfPlugin has not been started yet, or has been stopped");
         }
-        return component.updateAndGet(component -> {
-            if(component == null) {
-                component = DaggerMiniSdfEclipseComponent
-                    .builder()
-                    .platformComponent(SpoofaxPlugin.getComponent())
-                    .multiLangComponent(MultiLangPlugin.getComponent())
-                    .miniSdfModule(new MiniSdfModule())
-                    .miniSdfEclipseModule(new MiniSdfEclipseModule())
-                    .build();
-
-                component.getEditorTracker().register();
-                configListener = new UpdateAnalysisConfigChangeListener(component);
-                MultiLangPlugin.getConfigResourceChangeListener().addDelegate(configListener);
-            }
-            return component;
-        });
+        return component;
     }
 
     @Override public void start(@NonNull BundleContext context) throws Exception {
         super.start(context);
-        started = true;
+        component = DaggerMiniSdfEclipseComponent
+            .builder()
+            .platformComponent(SpoofaxPlugin.getComponent())
+            .multiLangComponent(MultiLangPlugin.getComponent())
+            .miniSdfModule(new MiniSdfModule())
+            .miniSdfEclipseModule(new MiniSdfEclipseModule())
+            .build();
+
+        component.getEditorTracker().register();
+        configListener = new UpdateAnalysisConfigChangeListener(component);
+        MultiLangPlugin.getConfigResourceChangeListener().addDelegate(configListener);
 
         new WorkspaceJob("MiniSdf startup") {
             @Override public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
@@ -72,7 +65,6 @@ public class MiniSdfPlugin extends AbstractUIPlugin {
             MultiLangPlugin.getConfigResourceChangeListener().removeDelegate(configListener);
         }
         configListener = null;
-        component.set(null);
-        started = false;
+        component = null;
     }
 }

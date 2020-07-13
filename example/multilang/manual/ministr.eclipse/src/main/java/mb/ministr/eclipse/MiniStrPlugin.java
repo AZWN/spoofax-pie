@@ -21,35 +21,28 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MiniStrPlugin extends AbstractUIPlugin {
     public static final String pluginId = "ministr.eclipse";
 
-    private static final AtomicReference<MiniStrEclipseComponent> component = new AtomicReference<>();
+    private static @Nullable MiniStrEclipseComponent component;
     private static @Nullable UpdateAnalysisConfigChangeListener configListener;
-    private static volatile boolean started = false;
 
-    public synchronized static MiniStrEclipseComponent getComponent() {
-        if(!started) {
+    public static MiniStrEclipseComponent getComponent() {
+        if(component == null) {
             throw new RuntimeException("Cannot access MiniStrComponent; MiniStrPlugin has not been started yet, or has been stopped");
         }
-        return component.updateAndGet(component -> {
-            if(component == null) {
-                // Lazy initialize to prevent synchronization issues with MultiLang extension point initialization
-                component = DaggerMiniStrEclipseComponent
-                    .builder()
-                    .platformComponent(SpoofaxPlugin.getComponent())
-                    .multiLangComponent(MultiLangPlugin.getComponent())
-                    .miniStrModule(new MiniStrModule())
-                    .miniStrEclipseModule(new MiniStrEclipseModule())
-                    .build();
-                component.getEditorTracker().register();
-                configListener = new UpdateAnalysisConfigChangeListener(component);
-                MultiLangPlugin.getConfigResourceChangeListener().addDelegate(configListener);
-            }
-            return component;
-        });
+        return component;
     }
 
     @Override public void start(@NonNull BundleContext context) throws Exception {
         super.start(context);
-        started = true;
+        component = DaggerMiniStrEclipseComponent
+            .builder()
+            .platformComponent(SpoofaxPlugin.getComponent())
+            .multiLangComponent(MultiLangPlugin.getComponent())
+            .miniStrModule(new MiniStrModule())
+            .miniStrEclipseModule(new MiniStrEclipseModule())
+            .build();
+        component.getEditorTracker().register();
+        configListener = new UpdateAnalysisConfigChangeListener(component);
+        MultiLangPlugin.getConfigResourceChangeListener().addDelegate(configListener);
 
         new WorkspaceJob("MiniStr startup") {
             @Override public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
@@ -69,7 +62,6 @@ public class MiniStrPlugin extends AbstractUIPlugin {
             MultiLangPlugin.getConfigResourceChangeListener().removeDelegate(configListener);
         }
         configListener = null;
-        component.set(null);
-        started = false;
+        component = null;
     }
 }

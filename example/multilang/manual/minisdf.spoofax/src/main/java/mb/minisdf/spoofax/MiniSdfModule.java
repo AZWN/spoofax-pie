@@ -1,5 +1,6 @@
 package mb.minisdf.spoofax;
 
+import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.ElementsIntoSet;
@@ -40,6 +41,7 @@ import mb.spoofax.core.language.command.AutoCommandRequest;
 import mb.spoofax.core.language.command.CommandDef;
 import mb.spoofax.core.pie.PieProvider;
 import mb.spoofax.core.platform.Platform;
+import mb.statix.multilang.AnalysisContextService;
 import mb.statix.multilang.ImmutableLanguageMetadata;
 import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.LanguageMetadata;
@@ -260,6 +262,11 @@ public class MiniSdfModule {
     @Provides @LanguageScope
     static LanguageInstance provideLanguageInstance(MiniSdfInstance miniSdfInstance) {
         return miniSdfInstance;
+    }
+
+    @Provides @LanguageScope
+    static AnalysisContextService getAnalysisContextService(@MultiLang AnalysisContextService analysisContextService) {
+        return analysisContextService;
     }
 
     @Provides @LanguageScope
