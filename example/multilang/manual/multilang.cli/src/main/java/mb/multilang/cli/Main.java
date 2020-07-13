@@ -81,8 +81,8 @@ public class Main {
             .putContextConfigurations(contextId, SetView.of(miniSdfLanguageId, miniStrLanguageId).asUnmodifiable())
             .putDefaultLanguageContexts(miniSdfLanguageId, contextId)
             .putDefaultLanguageContexts(miniStrLanguageId, contextId)
-            .putLanguageMetadataSuppliers(miniSdfLanguageId, Main::getMSdfLanguageMetadata)
-            .putLanguageMetadataSuppliers(miniStrLanguageId, Main::getMStrLanguageMetadata)
+            .putLanguageMetadataSuppliers(miniSdfLanguageId, miniSdfComponent::getLanguageMetadata)
+            .putLanguageMetadataSuppliers(miniStrLanguageId, miniStrComponent::getLanguageMetadata)
             .build();
 
         MultiLangComponent multiLangComponent = DaggerMultiLangComponent.builder()
@@ -110,102 +110,5 @@ public class Main {
 
         final int status = cmd.run(args, mergedPie, "combined", miniSdfComponent.getLanguageInstance(), miniStrComponent.getLanguageInstance());
         System.exit(status);
-    }
-
-    private static LanguageMetadata getMStrLanguageMetadata() {
-        MiniStrInstance miniStr = miniStrComponent.getLanguageInstance();
-        ResourceKeyString miniStrSpecPath = ResourceKeyString.of("mb/ministr/src-gen/statix");
-        ClassLoaderResource miniStrSpec = MSdfClassloaderResources
-            .createClassLoaderResourceRegistry()
-            .getResource(miniStrSpecPath);
-
-        SpecBuilder specBuilder;
-        try {
-            specBuilder = SpecUtils.loadSpec(miniStrSpec, "mini-str/mini-str-typing", miniStr.termFactory());
-        } catch(IOException e) {
-            throw new UncheckedIOException(e);
-        }
-
-        return ImmutableLanguageMetadata.builder()
-                .resourcesSupplier((exec, projectDir) -> {
-                    HierarchicalResource res = exec.getHierarchicalResource(projectDir);
-                    try {
-                        return res
-                            .walk(
-                                new PathResourceWalker(new NoHiddenPathMatcher()),
-                                new PathResourceMatcher(new ExtensionsPathMatcher(miniStr.getFileExtensions().asUnmodifiable())))
-                            .map(HierarchicalResource::getKey)
-                            .collect(Collectors.toCollection(HashSet::new));
-                    } catch(IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
-                })
-                .astFunction(miniStr.preStatix().createFunction()
-                    .mapInput(miniStr.indexAst()::createSupplier))
-                .postTransform(miniStr.postStatix().createFunction().mapInput(new IdentityMapper<>())) // Needed for typing
-                .languageId(new LanguageId("mb.ministr"))
-                .statixSpec(specBuilder)
-                .fileConstraint("mini-str/mini-str-typing!mstrProgramOK")
-                .projectConstraint("mini-str/mini-str-typing!mstrProjectOK")
-                .build();
-    }
-
-    private static LanguageMetadata getMSdfLanguageMetadata() {
-        MiniSdfInstance miniSdf = miniSdfComponent.getLanguageInstance();
-
-        ResourceKeyString miniSdfSpecPath = ResourceKeyString.of("mb/minisdf/src-gen/statix");
-        ClassLoaderResource miniSdfSpec = MSdfClassloaderResources
-            .createClassLoaderResourceRegistry()
-            .getResource(miniSdfSpecPath);
-
-        SpecBuilder specBuilder;
-        try {
-            specBuilder = SpecUtils.loadSpec(miniSdfSpec, "mini-sdf/mini-sdf-typing", miniSdf.termFactory());
-        } catch(IOException e) {
-            throw new UncheckedIOException(e);
-        }
-        return ImmutableLanguageMetadata.builder()
-                .resourcesSupplier((exec, projectDir) -> {
-                    HierarchicalResource res = exec.getHierarchicalResource(projectDir);
-                    try {
-                        return res
-                            .walk(
-                                new PathResourceWalker(new NoHiddenPathMatcher()),
-                                new PathResourceMatcher(new ExtensionsPathMatcher(miniSdf.getFileExtensions().asUnmodifiable())))
-                            .map(HierarchicalResource::getKey)
-                            .collect(Collectors.toCollection(HashSet::new));
-                    } catch(IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
-                })
-                .astFunction(miniSdf.preStatix().createFunction()
-                    .mapInput(miniSdf.indexAst()::createSupplier))
-                .postTransform(miniSdf.postStatix().createFunction().mapInput(new IdentityMapper<>())) // Needed for typing
-                .languageId(new LanguageId("mb.minisdf"))
-                .statixSpec(specBuilder)
-                .fileConstraint("mini-sdf/mini-sdf-typing!msdfProgramOK")
-                .projectConstraint("mini-sdf/mini-sdf-typing!msdfProjectOK")
-                .build();
-    }
-
-    // TODO: Move into library
-    private static class IndexAstMapper implements Function<ResourceKey, Supplier<Result<IStrategoTerm, JSGLR1ParseException>>> {
-        private final TaskDef<ResourceKey, Result<IStrategoTerm, JSGLR1ParseException>> indexAstTaskDef;
-
-        public IndexAstMapper(TaskDef<ResourceKey, Result<IStrategoTerm, JSGLR1ParseException>> indexAstTaskDef) {
-            this.indexAstTaskDef = indexAstTaskDef;
-        }
-
-        @Override
-        public mb.pie.api.Supplier<Result<IStrategoTerm, JSGLR1ParseException>> apply(ExecContext context, ResourceKey input) {
-            return indexAstTaskDef.createSupplier(input);
-        }
-    }
-
-    private static class IdentityMapper<I extends Serializable> implements Function<I, I> {
-        @Override
-        public I apply(ExecContext context, I input) {
-            return input;
-        }
     }
 }

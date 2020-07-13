@@ -13,15 +13,11 @@ import mb.jsglr.common.JSGLRTokens;
 import mb.minisdf.spoofax.command.MSdfShowAnalyzedAstCommand;
 import mb.minisdf.spoofax.task.MSdfComplete;
 import mb.minisdf.spoofax.task.MSdfIdeTokenize;
-import mb.minisdf.spoofax.task.MSdfIndexAst;
 import mb.minisdf.spoofax.task.MSdfParse;
-import mb.minisdf.spoofax.task.MSdfPostStatix;
-import mb.minisdf.spoofax.task.MSdfPreStatix;
 import mb.minisdf.spoofax.task.MSdfSmlCheck;
 import mb.minisdf.spoofax.task.MSdfStyle;
 import mb.pie.api.Task;
 import mb.resource.ResourceKey;
-import mb.resource.ResourceService;
 import mb.resource.hierarchical.ResourcePath;
 import mb.spoofax.core.language.LanguageInstance;
 import mb.spoofax.core.language.cli.CliCommand;
@@ -29,10 +25,7 @@ import mb.spoofax.core.language.cli.CliParam;
 import mb.spoofax.core.language.command.AutoCommandRequest;
 import mb.spoofax.core.language.command.CommandDef;
 import mb.spoofax.core.language.menu.MenuItem;
-import mb.statix.multilang.AnalysisContextService;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spoofax.interpreter.terms.ITermFactory;
-
 import javax.inject.Inject;
 
 public class MiniSdfInstance implements LanguageInstance {
@@ -44,13 +37,7 @@ public class MiniSdfInstance implements LanguageInstance {
     private final MSdfComplete complete;
 
     private final MSdfSmlCheck check;
-    private final MSdfPreStatix preStatix;
-    private final MSdfIndexAst indexAst;
-    private final MSdfPostStatix postStatix;
-
     private final MSdfShowAnalyzedAstCommand showAnalyzedAstCommand;
-
-    private final ITermFactory termFactory;
 
     @Inject public MiniSdfInstance(
         MSdfParse parse,
@@ -58,20 +45,14 @@ public class MiniSdfInstance implements LanguageInstance {
         MSdfStyle style,
         MSdfIdeTokenize tokenize,
         MSdfComplete complete,
-        MSdfPreStatix preStatix,
-        MSdfIndexAst indexAst, MSdfPostStatix postStatix,
-        MSdfShowAnalyzedAstCommand showAnalyzedAstCommand,
-        ITermFactory termFactory, AnalysisContextService analysisContextService, ResourceService resourceService) {
+        MSdfShowAnalyzedAstCommand showAnalyzedAstCommand
+    ) {
         this.parse = parse;
         this.check = check;
         this.style = style;
         this.tokenize = tokenize;
         this.complete = complete;
-        this.preStatix = preStatix;
-        this.indexAst = indexAst;
-        this.postStatix = postStatix;
         this.showAnalyzedAstCommand = showAnalyzedAstCommand;
-        this.termFactory = termFactory;
     }
 
     @Override public String getDisplayName() {
@@ -135,11 +116,4 @@ public class MiniSdfInstance implements LanguageInstance {
         // TODO: Properly initialize menu items
         return ListView.of();
     }
-
-    public MSdfPreStatix preStatix() { return this.preStatix; }
-    public MSdfPostStatix postStatix() { return this.postStatix; }
-
-    public ITermFactory termFactory() { return this.termFactory; }
-
-    public MSdfIndexAst indexAst() { return this.indexAst; }
 }

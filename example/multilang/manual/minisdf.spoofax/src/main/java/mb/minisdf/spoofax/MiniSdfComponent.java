@@ -9,6 +9,7 @@ import mb.spoofax.core.language.LanguageScope;
 import mb.spoofax.core.platform.Platform;
 import mb.spoofax.core.platform.PlatformComponent;
 import mb.statix.multilang.MultiLangComponent;
+import mb.statix.multilang.SupportsMLA;
 import mb.stratego.common.StrategoRuntime;
 
 import javax.inject.Provider;
@@ -19,10 +20,6 @@ import java.util.Set;
     modules = MiniSdfModule.class,
     dependencies = {PlatformComponent.class, MultiLangComponent.class}
 )
-public interface MiniSdfComponent extends LanguageComponent {
+public interface MiniSdfComponent extends LanguageComponent, SupportsMLA {
     @Override MiniSdfInstance getLanguageInstance();
-
-    StrategoRuntime getStrategoRuntime();
-
-    Pie languagePie();
 }
