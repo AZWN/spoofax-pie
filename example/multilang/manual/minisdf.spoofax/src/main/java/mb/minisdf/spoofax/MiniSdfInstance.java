@@ -5,8 +5,6 @@ import mb.common.option.Option;
 import mb.common.region.Region;
 import mb.common.result.Result;
 import mb.common.style.Styling;
-import mb.common.token.Token;
-import mb.common.token.Tokens;
 import mb.common.util.CollectionView;
 import mb.common.util.ListView;
 import mb.common.util.SetView;
@@ -32,16 +30,10 @@ import mb.spoofax.core.language.command.AutoCommandRequest;
 import mb.spoofax.core.language.command.CommandDef;
 import mb.spoofax.core.language.menu.MenuItem;
 import mb.statix.multilang.AnalysisContextService;
-import mb.statix.multilang.ContextId;
-import mb.statix.multilang.LanguageId;
-import mb.statix.multilang.MultiLangConfig;
-import mb.statix.multilang.pie.SmlBuildMessages;
-import mb.statix.multilang.utils.ContextUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spoofax.interpreter.terms.ITermFactory;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 
 public class MiniSdfInstance implements LanguageInstance {
     private final static SetView<String> extensions = SetView.of("msdf");
@@ -59,8 +51,6 @@ public class MiniSdfInstance implements LanguageInstance {
     private final MSdfShowAnalyzedAstCommand showAnalyzedAstCommand;
 
     private final ITermFactory termFactory;
-    private final AnalysisContextService analysisContextService;
-    private final ResourceService resourceService;
 
     @Inject public MiniSdfInstance(
         MSdfParse parse,
@@ -82,8 +72,6 @@ public class MiniSdfInstance implements LanguageInstance {
         this.postStatix = postStatix;
         this.showAnalyzedAstCommand = showAnalyzedAstCommand;
         this.termFactory = termFactory;
-        this.analysisContextService = analysisContextService;
-        this.resourceService = resourceService;
     }
 
     @Override public String getDisplayName() {
