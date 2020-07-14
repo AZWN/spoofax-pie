@@ -32,7 +32,6 @@ spoofaxLanguageProject {
       .enableNaBL2(false)
       .enableStatix(false)
       .copyClasses(false)
-      .copyJavaStrategyClasses(false)
       .copyCTree(true),
     multilangAnalyzer = MultilangAnalyzerCompiler.LanguageProjectInput.builder(),
 
