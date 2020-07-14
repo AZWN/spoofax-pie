@@ -20,7 +20,5 @@ import java.util.Set;
     dependencies = {PlatformComponent.class, MultiLangComponent.class}
 )
 public interface MiniStrComponent extends LanguageComponent, SupportsMLA {
-    // Lazy<AnalysisContextService> getAnalysisContextService();
-
     @Override MiniStrInstance getLanguageInstance();
 }
