@@ -45,18 +45,17 @@ public abstract class SmlCheckTaskDef implements TaskDef<ResourcePath, KeyedMess
         // Aggregate all parse messages
         final KeyedMessagesBuilder builder = new KeyedMessagesBuilder();
         analysisContextService.get().getLanguageMetadataResult(getLanguageId())
-            .ifElse(
-                languageMetadata -> languageMetadata
-                    .resourcesSupplier()
-                    .apply(context, projectPath)
-                    .forEach(resourceKey -> {
-                        try {
-                            Messages messages = context.require(parseMessageFunction.createSupplier(resourceKey));
-                            builder.addMessages(resourceKey, messages);
-                        } catch(IOException e) {
-                            builder.addMessage("IO Exception when parsing file", e, Severity.Error, resourceKey);
-                        }
-                    }),
+            .ifElse(languageMetadata -> languageMetadata
+                .resourcesSupplier()
+                .apply(context, projectPath)
+                .forEach(resourceKey -> {
+                    try {
+                        Messages messages = context.require(parseMessageFunction.createSupplier(resourceKey));
+                        builder.addMessages(resourceKey, messages);
+                    } catch(IOException e) {
+                        builder.addMessage("IO Exception when parsing file", e, Severity.Error, resourceKey);
+                    }
+                }),
                 err -> builder.addMessages(err.toKeyedMessages())
             );
 
@@ -64,7 +63,7 @@ public abstract class SmlCheckTaskDef implements TaskDef<ResourcePath, KeyedMess
         return context.require(buildContextConfiguration.createTask(new SmlBuildContextConfiguration.Input(projectPath, getLanguageId())))
             .mapErr(MultiLangAnalysisException::wrapIfNeeded)
             .flatMap(contextInfo -> {
-                final List<LanguageId> languageIds = contextInfo.getContextConfig().getLanguages();
+                final List<LanguageId> languageIds = contextInfo.getLanguages();
                 try {
                     // We execute the actual analysis in the context of a shared Pie, to make sure all information is present.
                     // This will not break incrementality, because this task (or its equivalents for other languages)
@@ -76,7 +75,7 @@ public abstract class SmlCheckTaskDef implements TaskDef<ResourcePath, KeyedMess
                         final Task<KeyedMessages> messagesTask = buildMessages.createTask(new SmlBuildMessages.Input(
                             projectPath,
                             languageIds,
-                            contextInfo.getContextConfig().parseLevel()
+                            contextInfo.parseLevel()
                         ));
                         return TaskUtils.executeWrapped(() -> Result.ofOk(session.require(messagesTask)), "Exception executing analysis");
                     }
@@ -84,7 +83,7 @@ public abstract class SmlCheckTaskDef implements TaskDef<ResourcePath, KeyedMess
                     return Result.ofErr(e);
                 }
             })
-            .mapOrElse((KeyedMessages messages) -> {
+            .mapOrElse(messages -> {
                 builder.addMessages(messages);
                 return builder.build();
             }, MultiLangAnalysisException::toKeyedMessages);
