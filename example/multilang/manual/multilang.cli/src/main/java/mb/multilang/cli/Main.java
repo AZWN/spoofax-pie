@@ -39,8 +39,8 @@ public class Main {
             .resourceRegistriesModule(new ResourceRegistriesModule())
             .build();
 
-        LanguageId miniSdfLanguageId = new LanguageId("mini-sdf");
-        LanguageId miniStrLanguageId = new LanguageId("mini-str");
+        LanguageId miniSdfLanguageId = new LanguageId("mb.minisdf");
+        LanguageId miniStrLanguageId = new LanguageId("mb.ministr");
         ContextId contextId = new ContextId("mini-sdf-str");
 
         Supplier<AnalysisContextService> analysisContextService = () -> AnalysisContextService.builder()
@@ -49,6 +49,7 @@ public class Main {
             .putDefaultLanguageContexts(miniStrLanguageId, contextId)
             .putLanguageMetadataSuppliers(miniSdfLanguageId, miniSdfComponent::getLanguageMetadata)
             .putLanguageMetadataSuppliers(miniStrLanguageId, miniStrComponent::getLanguageMetadata)
+            .platformPie(platformComponent.getPie())
             .build();
 
         MultiLangComponent multiLangComponent = DaggerMultiLangComponent.builder()
