@@ -10,13 +10,13 @@ import mb.spoofax.core.language.LanguageScope;
 import mb.statix.multilang.AnalysisContextService;
 import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.pie.SmlBuildMessages;
-import mb.statix.multilang.pie.SmlCheck;
+import mb.statix.multilang.pie.SmlCheckTaskDef;
 import mb.statix.multilang.pie.config.SmlBuildContextConfiguration;
 
 import javax.inject.Inject;
 
 @LanguageScope
-public class MSdfSmlCheck extends SmlCheck {
+public class MSdfSmlCheck extends SmlCheckTaskDef {
 
     @Inject public MSdfSmlCheck(
         MSdfParse parse,
