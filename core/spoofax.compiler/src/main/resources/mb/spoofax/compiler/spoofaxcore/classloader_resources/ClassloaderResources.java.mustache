@@ -12,8 +12,4 @@ public class {{genClassloaderResources.id}} {
     public static ClassLoaderResource createDefinitionDir(ClassLoaderResourceRegistry classLoaderResourceRegistry) {
         return classLoaderResourceRegistry.getResource(ResourceKeyString.of("{{languageProject.packagePath}}"));
     }
-
-    public static ClassLoaderResource defaultDefinitionDir() {
-        return createDefinitionDir(createClassLoaderResourceRegistry());
-    }
 }
