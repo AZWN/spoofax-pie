@@ -270,6 +270,7 @@ public class MiniStrModule {
     @Provides @LanguageScope
     static LanguageMetadata getLanguageMetadata(
         @Named("prototype") StrategoRuntime strategoRuntime,
+        @Named("definition-dir") ClassLoaderResource definitionDir,
         MStrPreStatix preStatix,
         MStrPostStatix postStatix,
         MStrIndexAst indexAst,
@@ -284,7 +285,7 @@ public class MiniStrModule {
             .languageId(new LanguageId("mb.ministr"))
             .languagePie(languagePie)
             .termFactory(termFactory)
-            .statixSpec(MetadataUtils.loadSpec(MStrClassloaderResources.defaultDefinitionDir(), termFactory, "mini-str/mini-str-typing"))
+            .statixSpec(MetadataUtils.loadSpec(definitionDir, termFactory, "mini-str/mini-str-typing"))
             .fileConstraint("mini-str/mini-str-typing!mstrProgramOK")
             .projectConstraint("mini-str/mini-str-typing!mstrProjectOK")
             .build();

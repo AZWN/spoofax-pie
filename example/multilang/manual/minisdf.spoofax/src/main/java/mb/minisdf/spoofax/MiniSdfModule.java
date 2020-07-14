@@ -272,6 +272,7 @@ public class MiniSdfModule {
     @Provides @LanguageScope
     static LanguageMetadata getLanguageMetadata(
         @Named("prototype") StrategoRuntime strategoRuntime,
+        @Named("definition-dir") ClassLoaderResource definitionDir,
         MSdfPreStatix preStatix,
         MSdfPostStatix postStatix,
         MSdfIndexAst indexAst,
@@ -285,7 +286,7 @@ public class MiniSdfModule {
             .languageId(new LanguageId("mb.minisdf"))
             .languagePie(languagePie)
             .termFactory(termFactory)
-            .statixSpec(MetadataUtils.loadSpec(MSdfClassloaderResources.defaultDefinitionDir(), termFactory, "mini-sdf/mini-sdf-typing"))
+            .statixSpec(MetadataUtils.loadSpec(definitionDir, termFactory, "mini-sdf/mini-sdf-typing"))
             .fileConstraint("mini-sdf/mini-sdf-typing!msdfProgramOK")
             .projectConstraint("mini-sdf/mini-sdf-typing!msdfProjectOK")
             .build();

@@ -12,8 +12,4 @@ public class MSdfClassloaderResources {
     public static ClassLoaderResource createDefinitionDir(ClassLoaderResourceRegistry classLoaderResourceRegistry) {
         return classLoaderResourceRegistry.getResource(ResourceKeyString.of("mb/minisdf/"));
     }
-
-    public static ClassLoaderResource defaultDefinitionDir() {
-        return createClassLoaderResourceRegistry().getResource(ResourceKeyString.of("mb/minisdf/"));
-    }
 }
