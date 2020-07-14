@@ -1,7 +1,6 @@
 package mb.statix.multilang;
 
 import dagger.Component;
-import dagger.Lazy;
 import mb.spoofax.core.platform.PlatformComponent;
 import mb.statix.multilang.pie.SmlAnalyzeProject;
 import mb.statix.multilang.pie.config.SmlBuildContextConfiguration;
