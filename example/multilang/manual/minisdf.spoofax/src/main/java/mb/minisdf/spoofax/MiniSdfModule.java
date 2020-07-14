@@ -1,6 +1,5 @@
 package mb.minisdf.spoofax;
 
-import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.ElementsIntoSet;
@@ -20,21 +19,14 @@ import mb.minisdf.spoofax.task.MSdfPostStatix;
 import mb.minisdf.spoofax.task.MSdfPreStatix;
 import mb.minisdf.spoofax.task.MSdfSmlCheck;
 import mb.minisdf.spoofax.task.MSdfStyle;
-import mb.pie.api.ExecContext;
-import mb.pie.api.Function;
 import mb.pie.api.MapTaskDefs;
 import mb.pie.api.Pie;
 import mb.pie.api.TaskDef;
 import mb.pie.api.TaskDefs;
-import mb.resource.ResourceKeyString;
 import mb.resource.ResourceService;
 import mb.resource.classloader.ClassLoaderResource;
 import mb.resource.classloader.ClassLoaderResourceRegistry;
 import mb.resource.hierarchical.HierarchicalResource;
-import mb.resource.hierarchical.match.PathResourceMatcher;
-import mb.resource.hierarchical.match.path.ExtensionsPathMatcher;
-import mb.resource.hierarchical.match.path.NoHiddenPathMatcher;
-import mb.resource.hierarchical.walk.PathResourceWalker;
 import mb.spoofax.core.language.LanguageInstance;
 import mb.spoofax.core.language.LanguageScope;
 import mb.spoofax.core.language.command.AutoCommandRequest;
@@ -47,12 +39,8 @@ import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.LanguageMetadata;
 import mb.statix.multilang.MultiLang;
 import mb.statix.multilang.SharedPieProvider;
-import mb.statix.multilang.pie.SmlAnalyzeProject;
-import mb.statix.multilang.pie.SmlBuildMessages;
-import mb.statix.multilang.pie.SmlBuildSpec;
-import mb.statix.multilang.pie.SmlInstantiateGlobalScope;
-import mb.statix.multilang.pie.SmlPartialSolveFile;
-import mb.statix.multilang.pie.SmlPartialSolveProject;
+import mb.statix.multilang.pie.*;
+import mb.statix.multilang.pie.SmlSolveProject;
 import mb.statix.multilang.pie.config.SmlBuildContextConfiguration;
 import mb.statix.multilang.pie.config.SmlReadConfigYaml;
 import mb.statix.multilang.utils.MetadataUtils;
@@ -61,12 +49,8 @@ import mb.stratego.common.StrategoRuntimeBuilder;
 import org.spoofax.interpreter.terms.ITermFactory;
 
 import javax.inject.Named;
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.UncheckedIOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Module
 public class MiniSdfModule {
@@ -137,7 +121,7 @@ public class MiniSdfModule {
 
     // Inject sml tasks into correct scope
     @Provides @LanguageScope
-    static SmlAnalyzeProject provideAnalyzeProject(@MultiLang SmlAnalyzeProject analyzeProject) {
+    static SmlSolveProject provideAnalyzeProject(@MultiLang SmlSolveProject analyzeProject) {
         return analyzeProject;
     }
 
@@ -192,7 +176,7 @@ public class MiniSdfModule {
         SmlBuildContextConfiguration buildContextConfiguration,
         SmlReadConfigYaml readConfigYaml,
 
-        SmlAnalyzeProject analyzeProject,
+        SmlSolveProject analyzeProject,
         SmlBuildMessages buildMessages,
         SmlBuildSpec buildSpec,
         SmlPartialSolveProject partialSolveProject,
