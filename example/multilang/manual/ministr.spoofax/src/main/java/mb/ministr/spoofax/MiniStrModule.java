@@ -34,9 +34,13 @@ import mb.spoofax.core.language.command.CommandDef;
 import mb.spoofax.core.pie.PieProvider;
 import mb.spoofax.core.platform.Platform;
 import mb.statix.multilang.AnalysisContextService;
+import mb.statix.multilang.ContextDataManager;
+import mb.statix.multilang.ContextPieManager;
 import mb.statix.multilang.ImmutableLanguageMetadata;
 import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.LanguageMetadata;
+import mb.statix.multilang.LanguageMetadataManager;
+import mb.statix.multilang.LanguagePieManager;
 import mb.statix.multilang.MultiLang;
 import mb.statix.multilang.SharedPieProvider;
 import mb.statix.multilang.pie.*;
@@ -246,6 +250,26 @@ public class MiniStrModule {
 
     @Provides @LanguageScope
     static AnalysisContextService getAnalysisContextService(@MultiLang AnalysisContextService analysisContextService) {
+        return analysisContextService;
+    }
+
+    @Provides @LanguageScope
+    static LanguageMetadataManager provideLanguageMetadataManager(@MultiLang AnalysisContextService analysisContextService) {
+        return analysisContextService;
+    }
+
+    @Provides @LanguageScope
+    static ContextPieManager provideContextPieManager(@MultiLang AnalysisContextService analysisContextService) {
+        return analysisContextService;
+    }
+
+    @Provides @LanguageScope
+    static ContextDataManager provideContextDataManager(@MultiLang AnalysisContextService analysisContextService) {
+        return analysisContextService;
+    }
+
+    @Provides @LanguageScope
+    static LanguagePieManager provideLanguagePieManager(@MultiLang AnalysisContextService analysisContextService) {
         return analysisContextService;
     }
 
