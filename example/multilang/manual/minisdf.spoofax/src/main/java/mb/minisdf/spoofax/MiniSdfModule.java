@@ -115,11 +115,6 @@ public class MiniSdfModule {
         return builder.build();
     }
 
-    @Provides @LanguageScope
-    static ITermFactory provideTermFactory(@Named("prototype") StrategoRuntime strategoRuntime) {
-        return strategoRuntime.getTermFactory();
-    }
-
     @Provides /* Unscoped: new session every call. */
     static StrategoRuntime provideStrategoRuntime(StrategoRuntimeBuilder builder, @Named("prototype") StrategoRuntime prototype) {
         return builder.buildFromPrototype(prototype);
