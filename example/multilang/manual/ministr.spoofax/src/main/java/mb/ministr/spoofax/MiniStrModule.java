@@ -40,7 +40,6 @@ import mb.statix.multilang.ImmutableLanguageMetadata;
 import mb.statix.multilang.LanguageId;
 import mb.statix.multilang.LanguageMetadata;
 import mb.statix.multilang.LanguageMetadataManager;
-import mb.statix.multilang.LanguagePieManager;
 import mb.statix.multilang.MultiLang;
 import mb.statix.multilang.SharedPieProvider;
 import mb.statix.multilang.pie.SmlBuildSpec;
@@ -265,11 +264,6 @@ public class MiniStrModule {
     }
 
     @Provides @LanguageScope
-    static LanguagePieManager provideLanguagePieManager(@MultiLang AnalysisContextService analysisContextService) {
-        return analysisContextService;
-    }
-
-    @Provides @LanguageScope
     static LanguageMetadata getLanguageMetadata(
         @Named("prototype") StrategoRuntime strategoRuntime,
         @Named("definition-dir") ClassLoaderResource definitionDir,
@@ -283,7 +277,7 @@ public class MiniStrModule {
         return ImmutableLanguageMetadata.builder()
             .resourcesSupplier(MetadataUtils.resourcesSupplierForExtensions("mstr"))
             .astFunction(preStatix.createFunction().mapInput(indexAst::createSupplier))
-            .postTransform(postStatix.createFunction().mapInput((exec, i) -> i)) // mapInput needed for typing
+            .postTransform(postStatix.createFunction())
             .languageId(new LanguageId("mb.ministr"))
             .languagePie(languagePie)
             .termFactory(termFactory)
