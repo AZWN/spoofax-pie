@@ -6,7 +6,7 @@ sorts
 context-free syntax
 
   Start.Module  = <<Expr>>
-  Expr.Plus2 	= <<Expr> + <Term>>
+  Expr.Plus 	= <<Expr> + <Term>>
   Expr.Term		= <<Term>>
   Term.Times 	= <<Term> * <Fact>>
   Term.Factor	= <<Fact>>
