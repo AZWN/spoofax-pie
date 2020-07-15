@@ -56,8 +56,7 @@ public class SmlPartialSolveProject implements TaskDef<SmlPartialSolveProject.In
                 projectConstraint.equals(input.projectConstraint);
         }
 
-        @Override
-        public int hashCode() {
+        @Override public int hashCode() {
             return Objects.hash(globalResultSupplier, specSupplier, projectConstraint);
         }
 
@@ -75,12 +74,12 @@ public class SmlPartialSolveProject implements TaskDef<SmlPartialSolveProject.In
 
     @Override
     public String getId() {
-        return SmlPartialSolveProject.class.getSimpleName();
+        return SmlPartialSolveProject.class.getCanonicalName();
     }
 
     @Override
-    public Result<SolverResult, MultiLangAnalysisException> exec(ExecContext context, Input input) throws Exception {
-        return context.require(input.globalResultSupplier)
+    public Result<SolverResult, MultiLangAnalysisException> exec(ExecContext context, Input input) {
+        return TaskUtils.executeWrapped(() -> context.require(input.globalResultSupplier)
             .mapErr(MultiLangAnalysisException::wrapIfNeeded)
             .flatMap(globalResult -> {
                 Set<ITermVar> scopeArgs = Collections.singleton(globalResult.getGlobalScopeVar());
@@ -94,6 +93,6 @@ public class SmlPartialSolveProject implements TaskDef<SmlPartialSolveProject.In
                             projectConstraint, debug, new NullProgress(), new NullCancel());
                         return Result.ofOk(res);
                     }, "Project constraint solving interrupted")), "Error loading specification");
-            });
+            }), "Exception getting global result");
     }
 }

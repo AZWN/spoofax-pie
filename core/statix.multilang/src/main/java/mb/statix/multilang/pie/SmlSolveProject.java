@@ -8,7 +8,6 @@ import mb.log.api.LoggerFactory;
 import mb.pie.api.ExecContext;
 import mb.pie.api.Supplier;
 import mb.pie.api.TaskDef;
-import mb.resource.ResourceKey;
 import mb.resource.hierarchical.ResourcePath;
 import mb.statix.constraints.CConj;
 import mb.statix.multilang.AnalysisResults;
@@ -28,6 +27,7 @@ import mb.statix.solver.log.IDebugContext;
 import mb.statix.solver.persistent.Solver;
 import mb.statix.solver.persistent.SolverResult;
 import mb.statix.spec.Spec;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.metaborg.util.log.Level;
 import org.metaborg.util.task.NullCancel;
 import org.metaborg.util.task.NullProgress;
@@ -49,9 +49,9 @@ public class SmlSolveProject implements TaskDef<SmlSolveProject.Input, Result<An
     public static class Input implements Serializable {
         private final ResourcePath projectPath;
         private final HashSet<LanguageId> languages;
-        private final Level logLevel;
+        private final @Nullable Level logLevel;
 
-        public Input(ResourcePath projectPath, HashSet<LanguageId> languages, Level logLevel) {
+        public Input(ResourcePath projectPath, HashSet<LanguageId> languages, @Nullable Level logLevel) {
             this.projectPath = projectPath;
             this.languages = languages;
             this.logLevel = logLevel;
@@ -101,7 +101,7 @@ public class SmlSolveProject implements TaskDef<SmlSolveProject.Input, Result<An
     }
 
     @Override public String getId() {
-        return SmlSolveProject.class.getSimpleName();
+        return SmlSolveProject.class.getCanonicalName();
     }
 
     @Override public Result<AnalysisResults, MultiLangAnalysisException> exec(ExecContext context, Input input) {
@@ -143,19 +143,19 @@ public class SmlSolveProject implements TaskDef<SmlSolveProject.Input, Result<An
         Map<FileKey, FileResult> fileResults
     ) {
         return Stream.concat(
-                projectResults.values().stream(),
-                fileResults.values().stream().map(FileResult::getResult))
+            projectResults.values().stream(),
+            fileResults.values().stream().map(FileResult::getResult))
             .map(SolverResult::state)
             .reduce(IState.Immutable::add)
             .<Result<AnalysisResults, MultiLangAnalysisException>>map(state ->
                 TaskUtils.executeWrapped(() -> context.require(globalResultSupplier(input))
-                    .flatMap(globalResult -> TaskUtils.executeWrapped(() -> context.require(specSupplier(input))
-                        // Upcast to make typing work
-                        .mapErr(MultiLangAnalysisException.class::cast)
-                        .flatMap(combinedSpec -> solveWithSpec(projectResults, fileResults, state, globalResult, combinedSpec, input.logLevel)), "Solving final constraints interrupted")
-                        .map(finalResult -> ImmutableAnalysisResults.of(globalResult.getGlobalScope(),
-                            new HashMap<>(projectResults), new HashMap<>(fileResults), finalResult))),
-                "IO exception while requiring global result"))
+                        .flatMap(globalResult -> TaskUtils.executeWrapped(() -> context.require(specSupplier(input))
+                            // Upcast to make typing work
+                            .mapErr(MultiLangAnalysisException.class::cast)
+                            .flatMap(combinedSpec -> solveWithSpec(projectResults, fileResults, state, globalResult, combinedSpec, input.logLevel)), "Solving final constraints interrupted")
+                            .map(finalResult -> ImmutableAnalysisResults.of(globalResult.getGlobalScope(),
+                                new HashMap<>(projectResults), new HashMap<>(fileResults), finalResult))),
+                    "IO exception while requiring global result"))
             .orElseGet(() -> Result.ofErr(new MultiLangAnalysisException("BUG: Analysis gave no results")));
     }
 
@@ -165,7 +165,7 @@ public class SmlSolveProject implements TaskDef<SmlSolveProject.Input, Result<An
         IState.Immutable state,
         GlobalResult globalResult,
         Spec combinedSpec,
-        Level logLevel
+        @Nullable Level logLevel
     ) {
         return TaskUtils.executeWrapped(() -> {
             IDebugContext debug = TaskUtils.createDebugContext(logLevel);

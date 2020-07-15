@@ -37,10 +37,6 @@ public abstract class AnalysisContextService implements LanguageMetadataManager,
         return contextConfigurations().getOrDefault(contextId, Collections.emptySet());
     }
 
-    @Override public Set<LanguageId> getAvailableLanguages() {
-        return languageMetadataSuppliers().keySet();
-    }
-
     @Override public ContextId getDefaultContextId(LanguageId languageId) {
         return defaultLanguageContexts().getOrDefault(languageId, new ContextId(languageId.getId()));
     }
@@ -61,9 +57,5 @@ public abstract class AnalysisContextService implements LanguageMetadataManager,
 
     public static ImmutableAnalysisContextService.Builder builder() {
         return ImmutableAnalysisContextService.builder();
-    }
-
-    public Pie buildPieForAllTriggeredLanguages() throws MultiLangAnalysisException {
-        return buildPieForLanguages(languageMetadataCache.keySet());
     }
 }
