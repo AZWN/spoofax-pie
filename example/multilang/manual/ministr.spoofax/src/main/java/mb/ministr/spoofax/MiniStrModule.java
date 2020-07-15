@@ -43,7 +43,10 @@ import mb.statix.multilang.LanguageMetadataManager;
 import mb.statix.multilang.LanguagePieManager;
 import mb.statix.multilang.MultiLang;
 import mb.statix.multilang.SharedPieProvider;
-import mb.statix.multilang.pie.*;
+import mb.statix.multilang.pie.SmlBuildSpec;
+import mb.statix.multilang.pie.SmlInstantiateGlobalScope;
+import mb.statix.multilang.pie.SmlPartialSolveFile;
+import mb.statix.multilang.pie.SmlPartialSolveProject;
 import mb.statix.multilang.pie.SmlSolveProject;
 import mb.statix.multilang.pie.config.SmlBuildContextConfiguration;
 import mb.statix.multilang.pie.config.SmlReadConfigYaml;
@@ -136,11 +139,6 @@ public class MiniStrModule {
     }
 
     @Provides @LanguageScope
-    static SmlBuildMessages provideBuildMessages(@MultiLang SmlBuildMessages buildMessages) {
-        return buildMessages;
-    }
-
-    @Provides @LanguageScope
     static SmlBuildSpec provideBuildSpec(@MultiLang SmlBuildSpec buildSpec) {
         return buildSpec;
     }
@@ -180,7 +178,6 @@ public class MiniStrModule {
         SmlReadConfigYaml readConfigYaml,
 
         SmlSolveProject analyzeProject,
-        SmlBuildMessages buildMessages,
         SmlBuildSpec buildSpec,
         SmlPartialSolveProject partialSolveProject,
         SmlPartialSolveFile partialSolveFile,
@@ -202,7 +199,6 @@ public class MiniStrModule {
         taskDefs.add(readConfigYaml);
 
         taskDefs.add(analyzeProject);
-        taskDefs.add(buildMessages);
         taskDefs.add(buildSpec);
         taskDefs.add(partialSolveFile);
         taskDefs.add(partialSolveProject);
