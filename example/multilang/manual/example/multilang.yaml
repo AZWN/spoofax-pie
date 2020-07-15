@@ -1,9 +1,5 @@
 languageContexts:
   'mb.minisdf': "debugContext"
   'mb.ministr': "debugContext"
-customContexts:
-  debugContext:
-    languages:
-    - "mb.minisdf"
-    - "mb.ministr"
-    logLevel: "debug"
+logging:
+  debugContext: debug"
