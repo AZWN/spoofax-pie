@@ -21,7 +21,7 @@ public class CombinedSpecLoadTest {
 
     private final ITermFactory termFactory = new TermFactory();
 
-    @Test public void testLoadCombinedSpec() throws IOException, SpecLoadException {
+    @Test public void testLoadCombinedSpec() throws SpecLoadException {
         SpecBuilder miniSdfSpec = loadSpec("mb/minisdf/src-gen/statix", "mini-sdf/mini-sdf-typing");
         SpecBuilder miniStrSpec = loadSpec("mb/ministr/src-gen/statix", "mini-str/mini-str-typing");
 
@@ -31,7 +31,7 @@ public class CombinedSpecLoadTest {
         assertTrue(overlappingRules.isEmpty());
     }
 
-    private SpecBuilder loadSpec(String pkg, String rootModule) throws IOException {
+    private SpecBuilder loadSpec(String pkg, String rootModule) throws SpecLoadException {
         ClassLoaderResourceRegistry registry = new ClassLoaderResourceRegistry(CombinedSpecLoadTest.class.getClassLoader());
         ClassLoaderResource specRoot = registry.getResource(ResourceKeyString.of(pkg));
         return SpecUtils.loadSpec(specRoot, rootModule, termFactory);

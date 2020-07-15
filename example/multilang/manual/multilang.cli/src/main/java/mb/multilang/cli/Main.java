@@ -1,6 +1,5 @@
 package mb.multilang.cli;
 
-import com.google.common.collect.Lists;
 import mb.common.util.SetView;
 import mb.log.slf4j.SLF4JLoggerFactory;
 import mb.minisdf.spoofax.DaggerMiniSdfComponent;
@@ -18,7 +17,6 @@ import mb.spoofax.core.platform.LoggerFactoryModule;
 import mb.spoofax.core.platform.PlatformPieModule;
 import mb.spoofax.core.platform.ResourceRegistriesModule;
 import mb.statix.multilang.AnalysisContextService;
-import mb.statix.multilang.ContextConfig;
 import mb.statix.multilang.ContextId;
 import mb.statix.multilang.DaggerMultiLangComponent;
 import mb.statix.multilang.LanguageId;
@@ -68,9 +66,6 @@ public class Main {
             .multiLangComponent(multiLangComponent)
             .miniStrModule(new MiniStrModule())
             .build();
-
-        ContextConfig config = new ContextConfig();
-        config.setLanguages(Lists.newArrayList(miniSdfLanguageId, miniStrLanguageId));
 
         final SpoofaxCli cmd = platformComponent.getSpoofaxCmd();
         Pie mergedPie = analysisContextService.get().buildPieForLanguages(SetView.of(miniSdfLanguageId, miniStrLanguageId).asUnmodifiable());
