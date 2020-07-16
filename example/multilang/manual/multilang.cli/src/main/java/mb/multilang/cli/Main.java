@@ -42,7 +42,6 @@ public class Main {
         ContextId contextId = new ContextId("mini-sdf-str");
 
         Supplier<AnalysisContextService> analysisContextService = () -> AnalysisContextService.builder()
-            .putContextConfigurations(contextId, SetView.of(miniSdfLanguageId, miniStrLanguageId).asUnmodifiable())
             .putDefaultLanguageContexts(miniSdfLanguageId, contextId)
             .putDefaultLanguageContexts(miniStrLanguageId, contextId)
             .putLanguageMetadataSuppliers(miniSdfLanguageId, miniSdfComponent::getLanguageMetadata)
