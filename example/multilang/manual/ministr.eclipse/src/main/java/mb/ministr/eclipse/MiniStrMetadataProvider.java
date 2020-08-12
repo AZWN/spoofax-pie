@@ -1,8 +1,8 @@
 package mb.ministr.eclipse;
 
-import mb.statix.multilang.ContextId;
-import mb.statix.multilang.LanguageId;
-import mb.statix.multilang.LanguageMetadata;
+import mb.statix.multilang.metadata.ContextId;
+import mb.statix.multilang.metadata.LanguageId;
+import mb.statix.multilang.metadata.LanguageMetadata;
 import mb.statix.multilang.eclipse.LanguageMetadataProvider;
 
 import java.util.HashMap;
