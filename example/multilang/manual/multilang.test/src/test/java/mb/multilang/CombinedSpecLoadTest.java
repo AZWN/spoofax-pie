@@ -4,16 +4,14 @@ import com.google.common.collect.ListMultimap;
 import mb.resource.ResourceKeyString;
 import mb.resource.classloader.ClassLoaderResource;
 import mb.resource.classloader.ClassLoaderResourceRegistry;
-import mb.statix.multilang.spec.SpecBuilder;
-import mb.statix.multilang.spec.SpecLoadException;
-import mb.statix.multilang.spec.SpecUtils;
+import mb.statix.multilang.metadata.spec.SpecBuilder;
+import mb.statix.multilang.metadata.spec.SpecLoadException;
+import mb.statix.multilang.metadata.spec.SpecUtils;
 import mb.statix.spec.Rule;
 import mb.statix.spec.Spec;
 import org.junit.jupiter.api.Test;
 import org.spoofax.interpreter.terms.ITermFactory;
 import org.spoofax.terms.TermFactory;
-
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
