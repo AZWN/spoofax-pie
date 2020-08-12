@@ -42,3 +42,6 @@ language:
 exports:
 - language: ATerm
   directory: src-gen/statix
+  includes:
+    - signatures/**/*.aterm
+    - mini-sdf/**/*.aterm

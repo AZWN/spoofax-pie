@@ -28,4 +28,4 @@ rules
   typeOfSortTerm(s, Plus(t)) 					= TITER(typeOfSortTerm(s, t)).
   typeOfSortTerm(s, Option(t)) 					= TOPT(typeOfSortTerm(s, t)).
   typeOfSortTerm(s, IterStar(t)) 				= TSTAR(typeOfSortTerm(s, t)).
-  typeOfSortTerm(s, Ref(SortRef(n)))	= typeOfSort(s, n).
+  typeOfSortTerm(s, Ref(SortRef(n)))	        = typeOfSort(s, n).

@@ -7,7 +7,3 @@ plugins {
 ecj {
   toolVersion = "3.20.0"
 }
-
-dependencies {
-  sourceLanguage(project(":signature-interface"))
-}
