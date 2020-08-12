@@ -16,6 +16,7 @@ sourceSets {
 fun compositeBuild(name: String) = "$group:$name"
 
 dependencies {
+  api(project(":signature.manual"))
   api(platform(compositeBuild("spoofax.depconstraints")))
 
   api(compositeBuild("spoofax.compiler.interfaces"))

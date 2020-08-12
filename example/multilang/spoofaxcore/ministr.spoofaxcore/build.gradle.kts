@@ -9,5 +9,5 @@ ecj {
 }
 
 dependencies {
-  sourceLanguage(project(":signature-interface"))
+  sourceLanguage(project(":signature-interface.spoofaxcore"))
 }
