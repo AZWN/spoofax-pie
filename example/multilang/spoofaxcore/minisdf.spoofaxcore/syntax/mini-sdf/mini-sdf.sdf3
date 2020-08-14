@@ -1,8 +1,7 @@
 module mini-sdf/mini-sdf
 
 imports
-
-  Common
+  minisdf-common
 
 lexical sorts
   MODNAME KW ID

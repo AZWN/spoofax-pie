@@ -2,7 +2,6 @@ package mb.ministr;
 
 import mb.constraint.common.stratego.ConstraintPrimitiveLibrary;
 import mb.log.api.LoggerFactory;
-import mb.nabl2.common.NaBL2PrimitiveLibrary;
 import mb.resource.ResourceService;
 import mb.resource.hierarchical.HierarchicalResource;
 import mb.spoofax.compiler.interfaces.spoofaxcore.StrategoRuntimeBuilderFactory;
@@ -24,7 +23,6 @@ public class MStrStrategoRuntimeBuilderFactory implements StrategoRuntimeBuilder
         final StrategoRuntimeBuilder builder = new StrategoRuntimeBuilder(loggerFactory, resourceService, definitionDir);
         builder.withJarParentClassLoader(MStrStrategoRuntimeBuilderFactory.class.getClassLoader());
         builder.addCtree(definitionDir.appendRelativePath("target/metaborg/stratego.ctree"));
-        builder.addLibrary(new NaBL2PrimitiveLibrary());
         builder.addLibrary(new ConstraintPrimitiveLibrary(resourceService));
         return builder;
     }

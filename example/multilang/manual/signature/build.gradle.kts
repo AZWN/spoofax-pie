@@ -20,6 +20,7 @@ dependencies {
 
   api(compositeBuild("spoofax.compiler.interfaces"))
   api(compositeBuild("common"))
+  api(compositeBuild("statix.multilang"))
 
   compileOnly("org.checkerframework:checker-qual-android")
 

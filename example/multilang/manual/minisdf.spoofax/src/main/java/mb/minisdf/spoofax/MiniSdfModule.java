@@ -7,6 +7,7 @@ import mb.log.api.LoggerFactory;
 import mb.minisdf.MSdfClassloaderResources;
 import mb.minisdf.MSdfParser;
 import mb.minisdf.MSdfParserFactory;
+import mb.minisdf.MSdfSpecFactory;
 import mb.minisdf.MSdfStrategoRuntimeBuilderFactory;
 import mb.minisdf.MSdfStyler;
 import mb.minisdf.MSdfStylerFactory;
@@ -42,6 +43,8 @@ import mb.statix.multilang.metadata.LanguageMetadata;
 import mb.statix.multilang.metadata.LanguageMetadataManager;
 import mb.statix.multilang.MultiLang;
 import mb.statix.multilang.SharedPieProvider;
+import mb.statix.multilang.metadata.SpecFragmentId;
+import mb.statix.multilang.metadata.spec.SpecConfig;
 import mb.statix.multilang.pie.SmlBuildSpec;
 import mb.statix.multilang.pie.SmlInstantiateGlobalScope;
 import mb.statix.multilang.pie.SmlPartialSolveFile;
@@ -56,6 +59,7 @@ import org.spoofax.interpreter.terms.ITermFactory;
 
 import javax.inject.Named;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Module
@@ -276,9 +280,13 @@ public class MiniSdfModule {
             .languageId(new LanguageId("mb.minisdf"))
             .languagePie(languagePie)
             .termFactory(termFactory)
-            .statixSpec(MetadataUtils.loadSpec(definitionDir, termFactory, "mini-sdf/mini-sdf-typing"))
             .fileConstraint("mini-sdf/mini-sdf-typing!msdfProgramOK")
             .projectConstraint("mini-sdf/mini-sdf-typing!msdfProjectOK")
             .build();
+    }
+
+    @Provides @LanguageScope
+    static Map<SpecFragmentId, SpecConfig> getSpecConfigs(@Named("prototype") StrategoRuntime strategoRuntime) {
+        return MSdfSpecFactory.getSpecConfigs(strategoRuntime.getTermFactory());
     }
 }

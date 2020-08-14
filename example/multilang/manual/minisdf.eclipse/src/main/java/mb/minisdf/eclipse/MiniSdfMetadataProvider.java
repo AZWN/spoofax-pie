@@ -4,6 +4,8 @@ import mb.statix.multilang.metadata.ContextId;
 import mb.statix.multilang.metadata.LanguageId;
 import mb.statix.multilang.metadata.LanguageMetadata;
 import mb.statix.multilang.eclipse.LanguageMetadataProvider;
+import mb.statix.multilang.metadata.SpecFragmentId;
+import mb.statix.multilang.metadata.spec.SpecConfig;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +24,11 @@ public class MiniSdfMetadataProvider implements LanguageMetadataProvider {
         Map<LanguageId, Supplier<LanguageMetadata>> result = new HashMap<>();
         result.put(new LanguageId("mb.minisdf"), this::getLanguageMetadata);
         return result;
+    }
+
+    @Override
+    public Map<SpecFragmentId, SpecConfig> getSpecConfigs() {
+        return MiniSdfPlugin.getComponent().getSpecConfigs();
     }
 
     @Override

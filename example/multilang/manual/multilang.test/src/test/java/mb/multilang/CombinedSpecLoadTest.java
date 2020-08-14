@@ -4,7 +4,7 @@ import com.google.common.collect.ListMultimap;
 import mb.resource.ResourceKeyString;
 import mb.resource.classloader.ClassLoaderResource;
 import mb.resource.classloader.ClassLoaderResourceRegistry;
-import mb.statix.multilang.metadata.spec.SpecBuilder;
+import mb.statix.multilang.metadata.spec.SpecFragment;
 import mb.statix.multilang.metadata.spec.SpecLoadException;
 import mb.statix.multilang.metadata.spec.SpecUtils;
 import mb.statix.spec.Rule;
@@ -22,16 +22,16 @@ public class CombinedSpecLoadTest {
 
     @Disabled("Need to implement dependent module resolution first")
     @Test public void testLoadCombinedSpec() throws SpecLoadException {
-        SpecBuilder miniSdfSpec = loadSpec("mb/minisdf/src-gen/statix", "mini-sdf/mini-sdf-typing");
-        SpecBuilder miniStrSpec = loadSpec("mb/ministr/src-gen/statix", "mini-str/mini-str-typing");
+        SpecFragment miniSdfSpec = loadSpec("mb/minisdf/src-gen/statix", "mini-sdf/mini-sdf-typing");
+        SpecFragment miniStrSpec = loadSpec("mb/ministr/src-gen/statix", "mini-str/mini-str-typing");
 
-        Spec combinedSpec = miniSdfSpec.extend().addAllModules(miniStrSpec.modules()).build().toSpec();
+        Spec combinedSpec = SpecUtils.mergeSpecs(miniSdfSpec.toSpec(), miniStrSpec.toSpec()).unwrap();
 
         ListMultimap<String, Rule> overlappingRules = combinedSpec.rules().getAllEquivalentRules();
         assertTrue(overlappingRules.isEmpty());
     }
 
-    private SpecBuilder loadSpec(String pkg, String rootModule) throws SpecLoadException {
+    private SpecFragment loadSpec(String pkg, String rootModule) throws SpecLoadException {
         ClassLoaderResourceRegistry registry = new ClassLoaderResourceRegistry(CombinedSpecLoadTest.class.getClassLoader());
         ClassLoaderResource specRoot = registry.getResource(ResourceKeyString.of(pkg));
         return SpecUtils.loadSpec(specRoot, rootModule, termFactory);

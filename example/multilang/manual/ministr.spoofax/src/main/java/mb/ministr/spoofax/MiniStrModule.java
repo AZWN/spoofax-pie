@@ -7,6 +7,7 @@ import mb.log.api.LoggerFactory;
 import mb.ministr.MStrClassloaderResources;
 import mb.ministr.MStrParser;
 import mb.ministr.MStrParserFactory;
+import mb.ministr.MStrSpecFactory;
 import mb.ministr.MStrStrategoRuntimeBuilderFactory;
 import mb.ministr.MStrStyler;
 import mb.ministr.MStrStylerFactory;
@@ -42,6 +43,8 @@ import mb.statix.multilang.metadata.LanguageMetadata;
 import mb.statix.multilang.metadata.LanguageMetadataManager;
 import mb.statix.multilang.MultiLang;
 import mb.statix.multilang.SharedPieProvider;
+import mb.statix.multilang.metadata.SpecFragmentId;
+import mb.statix.multilang.metadata.spec.SpecConfig;
 import mb.statix.multilang.pie.SmlBuildSpec;
 import mb.statix.multilang.pie.SmlInstantiateGlobalScope;
 import mb.statix.multilang.pie.SmlPartialSolveFile;
@@ -56,6 +59,7 @@ import org.spoofax.interpreter.terms.ITermFactory;
 
 import javax.inject.Named;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Module
@@ -276,9 +280,13 @@ public class MiniStrModule {
             .languageId(new LanguageId("mb.ministr"))
             .languagePie(languagePie)
             .termFactory(termFactory)
-            .statixSpec(MetadataUtils.loadSpec(definitionDir, termFactory, "mini-str/mini-str-typing"))
             .fileConstraint("mini-str/mini-str-typing!mstrProgramOK")
             .projectConstraint("mini-str/mini-str-typing!mstrProjectOK")
             .build();
+    }
+
+    @Provides @LanguageScope
+    static Map<SpecFragmentId, SpecConfig> getSpecConfig(@Named("prototype") StrategoRuntime strategoRuntime) {
+        return MStrSpecFactory.getSpecConfigs(strategoRuntime.getTermFactory());
     }
 }

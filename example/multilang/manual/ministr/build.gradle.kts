@@ -25,9 +25,8 @@ dependencies {
   api(compositeBuild("jsglr1.common"))
   api(compositeBuild("esv.common"))
   api(compositeBuild("stratego.common"))
-  api(compositeBuild("constraint.common"))
+  api(compositeBuild("statix.multilang"))
 
-  implementation(compositeBuild("nabl2.common"))
   implementation("org.metaborg:strategoxt-min-jar")
 
   compileOnly("org.checkerframework:checker-qual-android")
