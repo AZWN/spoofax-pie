@@ -5,6 +5,7 @@ import mb.spoofax.compiler.spoofaxcore.ParserCompiler
 import mb.spoofax.compiler.spoofaxcore.StrategoRuntimeCompiler
 import mb.spoofax.compiler.spoofaxcore.StylerCompiler
 import mb.spoofax.compiler.util.GradleDependency
+import mb.spoofax.compiler.util.TypeInfo
 
 plugins {
   id("org.metaborg.gradle.config.java-library")
@@ -13,6 +14,7 @@ plugins {
 }
 
 dependencies {
+  api(project(":signature"))
   testImplementation("org.metaborg:log.backend.noop")
   testCompileOnly("org.checkerframework:checker-qual-android")
 }
@@ -33,7 +35,10 @@ spoofaxLanguageProject {
       .enableStatix(false)
       .copyClasses(false)
       .copyCTree(true),
-    multilangAnalyzer = MultilangAnalyzerCompiler.LanguageProjectInput.builder(),
+    multilangAnalyzer = MultilangAnalyzerCompiler.LanguageProjectInput.builder()
+      .rootModules(listOf("mini-str/mini-str-typing"))
+      // FIXME: Find better way to reference this class
+      .dependencyFactories(listOf(TypeInfo.of("mb.signature", "SignatureSpecConfigFactory"))),
 
     builder = LanguageProjectCompiler.Input.builder()
       .languageSpecificationDependency(GradleDependency.module("$group:ministr.spoofaxcore:$version"))

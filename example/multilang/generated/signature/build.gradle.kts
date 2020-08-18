@@ -5,7 +5,6 @@ import mb.spoofax.compiler.spoofaxcore.ParserCompiler
 import mb.spoofax.compiler.spoofaxcore.StrategoRuntimeCompiler
 import mb.spoofax.compiler.spoofaxcore.StylerCompiler
 import mb.spoofax.compiler.util.GradleDependency
-import mb.spoofax.compiler.util.TypeInfo
 
 plugins {
   id("org.metaborg.gradle.config.java-library")
@@ -14,7 +13,6 @@ plugins {
 }
 
 dependencies {
-  api(project(":signature"))
   testImplementation("org.metaborg:log.backend.noop")
   testCompileOnly("org.checkerframework:checker-qual-android")
 }
@@ -22,25 +20,14 @@ dependencies {
 spoofaxLanguageProject {
   settings.set(mb.spoofax.compiler.gradle.spoofaxcore.LanguageProjectSettings(
     shared = mb.spoofax.compiler.spoofaxcore.Shared.builder()
-      .name("MiniSdf")
-      .fileExtensions(listOf("msdf"))
-      .defaultBasePackageId("mb.minisdf"),
+      .name("Signature")
+      .fileExtensions(listOf())
+      .defaultBasePackageId("mb.signature"),
 
-    parser = ParserCompiler.LanguageProjectInput.builder()
-      .startSymbol("MSDFStart"),
-    styler = StylerCompiler.LanguageProjectInput.builder(),
-    completer = CompleterCompiler.LanguageProjectInput.builder(),
-    strategoRuntime = StrategoRuntimeCompiler.LanguageProjectInput.builder()
-      .enableNaBL2(false)
-      .enableStatix(false)
-      .copyClasses(false)
-      .copyCTree(true),
     multilangAnalyzer = MultilangAnalyzerCompiler.LanguageProjectInput.builder()
-      .rootModules(listOf("mini-sdf/mini-sdf-typing"))
-      // In the future: reference this class via language project settings?
-      .dependencyFactories(listOf(TypeInfo.of("mb.signature", "SignatureSpecConfigFactory"))),
+      .rootModules(listOf("cons-type-interface/conflicts/sorts", "cons-type-interface/conflicts/constructors")),
 
     builder = LanguageProjectCompiler.Input.builder()
-      .languageSpecificationDependency(GradleDependency.module("$group:minisdf.spoofaxcore:$version"))
+      .languageSpecificationDependency(GradleDependency.module("$group:signature-interface.spoofaxcore:$version"))
   ))
 }
