@@ -31,8 +31,8 @@ import mb.spoofax.core.language.LanguageInstance;
 import mb.spoofax.core.language.LanguageScope;
 import mb.spoofax.core.language.command.AutoCommandRequest;
 import mb.spoofax.core.language.command.CommandDef;
-import mb.spoofax.core.pie.PieProvider;
 import mb.spoofax.core.platform.Platform;
+import mb.statix.multilang.MultiLangAnalysisException;
 import mb.statix.multilang.metadata.AnalysisContextService;
 import mb.statix.multilang.metadata.ContextDataManager;
 import mb.statix.multilang.metadata.ContextPieManager;
@@ -41,7 +41,6 @@ import mb.statix.multilang.metadata.LanguageId;
 import mb.statix.multilang.metadata.LanguageMetadata;
 import mb.statix.multilang.metadata.LanguageMetadataManager;
 import mb.statix.multilang.MultiLang;
-import mb.statix.multilang.SharedPieProvider;
 import mb.statix.multilang.pie.SmlBuildSpec;
 import mb.statix.multilang.pie.SmlInstantiateGlobalScope;
 import mb.statix.multilang.pie.SmlPartialSolveFile;
@@ -208,7 +207,7 @@ public class MiniSdfModule {
     }
 
     @Provides @LanguageScope @Named("prototype")
-    static Pie providePie(@Platform Pie pie, TaskDefs taskDefs, ResourceService resourceService) {
+    static Pie providePrototypePie(@Platform Pie pie, TaskDefs taskDefs, ResourceService resourceService) {
         return pie.createChildBuilder().withTaskDefs(taskDefs).withResourceService(resourceService).build();
     }
 
@@ -218,8 +217,12 @@ public class MiniSdfModule {
     }
 
     @Provides @LanguageScope
-    static PieProvider providePieProvider(SharedPieProvider pieProvider) {
-        return pieProvider;
+    static Pie providePieProvider(ContextPieManager pieManager) {
+        try {
+            return pieManager.buildPieForContext();
+        } catch(MultiLangAnalysisException e) {
+            throw new RuntimeException("Cannot build shared Pie", e);
+        }
     }
 
     @Provides @LanguageScope @ElementsIntoSet

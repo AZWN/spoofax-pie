@@ -67,7 +67,7 @@ public class Main {
             .build();
 
         final SpoofaxCli cmd = platformComponent.getSpoofaxCmd();
-        Pie mergedPie = analysisContextService.get().buildPieForLanguages(SetView.of(miniSdfLanguageId, miniStrLanguageId).asUnmodifiable());
+        Pie mergedPie = analysisContextService.get().buildPieForContext();
 
         final int status = cmd.run(args, mergedPie, "combined", miniSdfComponent.getLanguageInstance(), miniStrComponent.getLanguageInstance());
         System.exit(status);

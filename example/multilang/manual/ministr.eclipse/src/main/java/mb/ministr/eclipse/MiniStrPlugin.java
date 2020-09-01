@@ -44,7 +44,7 @@ public class MiniStrPlugin extends AbstractUIPlugin {
         configListener = new UpdateAnalysisConfigChangeListener(component);
         MultiLangPlugin.getConfigResourceChangeListener().addDelegate(configListener);
 
-        new WorkspaceJob("MiniStr startup") {
+        WorkspaceJob job = new WorkspaceJob("MiniStr startup") {
             @Override public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
                 try {
                     SpoofaxPlugin.getComponent().getPieRunner().startup(getComponent(), monitor);
@@ -53,7 +53,9 @@ public class MiniStrPlugin extends AbstractUIPlugin {
                 }
                 return StatusUtil.success();
             }
-        }.schedule();
+        };
+        job.setRule(component.startupWriteLockRule());
+        job.schedule();
     }
 
     @Override public void stop(@NonNull BundleContext context) throws Exception {

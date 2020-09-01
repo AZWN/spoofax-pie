@@ -6,7 +6,6 @@ import mb.common.result.Result;
 import mb.log.api.Logger;
 import mb.log.api.LoggerFactory;
 import mb.log.slf4j.SLF4JLoggerFactory;
-import mb.pie.api.Function;
 import mb.pie.api.MixedSession;
 import mb.pie.api.Pie;
 import mb.pie.api.Supplier;
@@ -57,7 +56,7 @@ class TestBase {
     final Sdf3Desugar desugar = languageComponent.getDesugar();
     final Sdf3CreateSpec createSpec = languageComponent.getCreateSpec();
     final Sdf3AnalyzeMulti analyze = languageComponent.getAnalyze();
-    final Pie pie = languageComponent.getPieProvider().getPie(null);
+    final Pie pie = languageComponent.getPie();
 
 
     FSResource createTextFile(String text, String relativePath) throws IOException {
