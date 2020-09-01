@@ -34,7 +34,7 @@ public class MiniSdfPlugin extends AbstractUIPlugin {
         component = DaggerMiniSdfEclipseComponent
             .builder()
             .platformComponent(SpoofaxPlugin.getComponent())
-            .multiLangComponent(MultiLangPlugin.getComponent())
+            .multiLangEclipseComponent(MultiLangPlugin.getComponent())
             .miniSdfModule(new MiniSdfModule())
             .miniSdfEclipseModule(new MiniSdfEclipseModule())
             .build();
@@ -51,7 +51,7 @@ public class MiniSdfPlugin extends AbstractUIPlugin {
                 return StatusUtil.success();
             }
         };
-        job.setRule(MultiLangPlugin.getComponent().startUpLockRule());
+        job.setRule(component.startupWriteLockRule());
         job.schedule();
     }
 

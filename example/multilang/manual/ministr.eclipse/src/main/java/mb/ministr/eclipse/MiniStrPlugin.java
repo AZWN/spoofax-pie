@@ -33,7 +33,7 @@ public class MiniStrPlugin extends AbstractUIPlugin {
         component = DaggerMiniStrEclipseComponent
             .builder()
             .platformComponent(SpoofaxPlugin.getComponent())
-            .multiLangComponent(MultiLangPlugin.getComponent())
+            .multiLangEclipseComponent(MultiLangPlugin.getComponent())
             .miniStrModule(new MiniStrModule())
             .miniStrEclipseModule(new MiniStrEclipseModule())
             .build();
@@ -49,7 +49,7 @@ public class MiniStrPlugin extends AbstractUIPlugin {
                 return StatusUtil.success();
             }
         };
-        job.setRule(MultiLangPlugin.getComponent().startUpLockRule());
+        job.setRule(component.startupWriteLockRule());
         job.schedule();
     }
 
