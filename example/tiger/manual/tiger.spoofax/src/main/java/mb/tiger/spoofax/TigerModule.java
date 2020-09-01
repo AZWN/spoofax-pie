@@ -17,8 +17,6 @@ import mb.spoofax.core.language.LanguageScope;
 import mb.spoofax.core.language.command.AutoCommandRequest;
 import mb.spoofax.core.language.command.CommandDef;
 import mb.spoofax.core.language.command.HierarchicalResourceType;
-import mb.spoofax.core.pie.DefaultPieProvider;
-import mb.spoofax.core.pie.PieProvider;
 import mb.spoofax.core.platform.Platform;
 import mb.stratego.common.StrategoRuntime;
 import mb.stratego.common.StrategoRuntimeBuilder;
