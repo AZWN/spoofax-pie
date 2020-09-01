@@ -5,7 +5,6 @@ import mb.pie.api.ExecException;
 import mb.spoofax.eclipse.SpoofaxPlugin;
 import mb.spoofax.eclipse.util.StatusUtil;
 import mb.statix.multilang.eclipse.MultiLangPlugin;
-import mb.statix.multilang.eclipse.UpdateAnalysisConfigChangeListener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.core.resources.WorkspaceJob;
@@ -16,13 +15,11 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MiniSdfPlugin extends AbstractUIPlugin {
     public static final String pluginId = "minisdf.eclipse";
 
     private static @Nullable MiniSdfEclipseComponent component;
-    private static @Nullable UpdateAnalysisConfigChangeListener configListener;
 
     public static MiniSdfEclipseComponent getComponent() {
         if(component == null) {
@@ -43,8 +40,6 @@ public class MiniSdfPlugin extends AbstractUIPlugin {
             .build();
 
         component.getEditorTracker().register();
-        configListener = new UpdateAnalysisConfigChangeListener(component);
-        MultiLangPlugin.getConfigResourceChangeListener().addDelegate(configListener);
 
         WorkspaceJob job = new WorkspaceJob("MiniSdf startup") {
             @Override public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
@@ -56,16 +51,12 @@ public class MiniSdfPlugin extends AbstractUIPlugin {
                 return StatusUtil.success();
             }
         };
-        job.setRule(component.startupWriteLockRule());
+        job.setRule(MultiLangPlugin.getComponent().startUpLockRule());
         job.schedule();
     }
 
     @Override public void stop(@NonNull BundleContext context) throws Exception {
         super.stop(context);
-        if(configListener != null) {
-            MultiLangPlugin.getConfigResourceChangeListener().removeDelegate(configListener);
-        }
-        configListener = null;
         component = null;
     }
 }
