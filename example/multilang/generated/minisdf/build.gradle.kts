@@ -14,13 +14,13 @@ plugins {
 }
 
 dependencies {
-  api(project(":signature"))
+  api(project(":module"))
   testImplementation("org.metaborg:log.backend.noop")
   testCompileOnly("org.checkerframework:checker-qual-android")
 }
 
 spoofaxLanguageProject {
-  statixDependencies.set(listOf(project(":signature")))
+  statixDependencies.set(listOf(project(":module")))
   settings.set(mb.spoofax.compiler.gradle.spoofaxcore.LanguageProjectSettings(
     shared = mb.spoofax.compiler.spoofaxcore.Shared.builder()
       .name("MiniSdf")

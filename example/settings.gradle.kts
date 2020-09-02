@@ -63,12 +63,14 @@ fun String.includeProject(id: String, path: String = "$this/$id") {
 
 "multilang/spoofaxcore".run {
   includeProject("signature-interface.spoofaxcore")
+  includeProject("module-interface.spoofaxcore")
   includeProject("minisdf.spoofaxcore")
   includeProject("ministr.spoofaxcore")
 }
 
 "multilang/manual".run {
   includeProject("signature.manual", "multilang/manual/signature")
+  includeProject("module.manual", "multilang/manual/module")
 
   includeProject("minisdf.manual", "multilang/manual/minisdf")
   includeProject("minisdf.manual.spoofax", "multilang/manual/minisdf.spoofax")
@@ -87,6 +89,7 @@ fun String.includeProject(id: String, path: String = "$this/$id") {
 
 "multilang/generated".run {
   includeProject("signature")
+  includeProject("module")
 
   includeProject("minisdf")
   includeProject("minisdf.spoofax")

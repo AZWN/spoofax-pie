@@ -18,17 +18,11 @@ fun compositeBuild(name: String) = "$group:$name"
 dependencies {
   api(platform(compositeBuild("spoofax.depconstraints")))
 
-  api(project(":module.manual"))
+  api(project(":signature.manual"))
+
   api(compositeBuild("spoofax.compiler.interfaces"))
   api(compositeBuild("common"))
-  api(compositeBuild("completions.common"))
-  api(compositeBuild("jsglr1.common"))
-  api(compositeBuild("esv.common"))
-  api(compositeBuild("stratego.common"))
   api(compositeBuild("statix.multilang"))
-
-  // implementation(compositeBuild("statix.multilang"))
-  implementation("org.metaborg:strategoxt-min-jar")
 
   compileOnly("org.checkerframework:checker-qual-android")
 
@@ -109,11 +103,10 @@ fun copySpoofaxLanguageResources(
   tasks.getByName(JavaPlugin.TEST_CLASSES_TASK_NAME).dependsOn(copyTestTask)
 }
 copySpoofaxLanguageResources(
-  dependencies.create(compositeBuild("minisdf.spoofaxcore")),
-  "mb/minisdf",
+  dependencies.create(compositeBuild("module-interface.spoofaxcore")),
+  "mb/module",
   false,
-  false,
-  "target/metaborg/editor.esv.af", "target/metaborg/sdf.tbl", "target/metaborg/stratego.ctree"
+  false
 )
 
 ecj {

@@ -1,6 +1,6 @@
 ---
-id: org.metaborg:signature-interface:0.1.0-SNAPSHOT
-name: signature-interface
+id: org.metaborg:module-interface:0.1.0-SNAPSHOT
+name: module-interface
 dependencies:
   compile:
   - org.metaborg:org.metaborg.meta.lang.template:${metaborgVersion}
@@ -13,10 +13,10 @@ debug:
 exports:
 - language: ATerm
   directory: src-gen/statix
-  includes: "cons-type-interface/**/*.aterm"
+  includes: "module-interface/**/*.aterm"
 - language: Statix
   directory: trans
-  includes: "cons-type-interface/**/*.stx"
+  includes: "module-interface/**/*.stx"
 - language: Stratego-Sugar
   directory: trans
   includes: "**/*.str"

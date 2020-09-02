@@ -1,6 +1,7 @@
 module cons-type-interface/conflicts/constructors
 
 imports
+  module-interface/modules
   cons-type-interface/constructors
 
 signature
@@ -19,7 +20,7 @@ rules
 rules
 
   conssInScope : scope -> list(CTI)
-
+  
   conssInScope(s) = typeInfosOfConss(C) :-
     query cons
       filter resolveMatch[Cons{_}]
@@ -28,7 +29,7 @@ rules
 rules
 
   importedConss : scope -> list(CTI)
-
+  
   importedConss(s) = typeInfosOfConss(C) :-
     query cons
       filter resolveMatch[Cons{_}] & ~e
@@ -45,7 +46,7 @@ rules
   // Double maps to validate each pair
   conssDisjoint maps consDisjoint(list(*), *)
   consDisjoint maps consPairDisjoint(*, list(*))
-
+ 
   consPairDisjoint: CTI * CTI
 
   consPairDisjoint((n, a, id1), (n, a, id2)) :-

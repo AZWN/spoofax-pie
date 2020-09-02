@@ -1,5 +1,6 @@
 package mb.ministr;
 
+import mb.signature.ModuleSpecFactory;
 import mb.signature.SigSpecFactory;
 import mb.statix.multilang.metadata.SpecFragmentId;
 import mb.statix.multilang.metadata.spec.ImmutableSpecConfig;
@@ -32,8 +33,7 @@ public class MStrSpecFactory {
     }
 
     public static Map<SpecFragmentId, SpecConfig> getSpecConfigs(ITermFactory termFactory) {
-        final HashMap<SpecFragmentId, SpecConfig> result = new HashMap<>();
-        result.putAll(SigSpecFactory.getSpecConfigs());
+        final HashMap<SpecFragmentId, SpecConfig> result = new HashMap<>(ModuleSpecFactory.getSpecConfigs());
         result.put(getSpecId(), getSpecConfig(termFactory));
         return result;
     }

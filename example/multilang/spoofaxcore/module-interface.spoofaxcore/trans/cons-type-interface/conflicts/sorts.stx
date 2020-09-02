@@ -1,6 +1,7 @@
 module cons-type-interface/conflicts/sorts
 
 imports
+  module-interface/modules
   cons-type-interface/sorts
 
 signature
@@ -19,14 +20,14 @@ rules
 rules
 
   sortsInScope : scope -> list(STI)
-
+  
   sortsInScope(s) = typeInfosOfSorts(S) :-
     sort of Sort{_} in s |-> S.
 
 rules
 
   importedSorts : scope -> list(STI)
-
+  
   importedSorts(s) = typeInfosOfSorts(S) :-
     query sort
       filter resolveMatch[Sort{_}] & ~e
@@ -44,7 +45,7 @@ rules
   // Double maps to validate each pair
   sortsDisjoint maps sortDisjoint(list(*), *)
   sortDisjoint maps sortPairDisjoint(*, list(*))
-
+ 
   sortPairDisjoint: STI * STI
 
   sortPairDisjoint((n, id1), (n, id2)) :-

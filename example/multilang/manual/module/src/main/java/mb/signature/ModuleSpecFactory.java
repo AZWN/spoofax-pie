@@ -1,7 +1,5 @@
-package mb.minisdf;
+package mb.signature;
 
-import mb.signature.ModuleSpecFactory;
-import mb.signature.SigSpecFactory;
 import mb.statix.multilang.metadata.SpecFragmentId;
 import mb.statix.multilang.metadata.spec.ImmutableSpecConfig;
 import mb.statix.multilang.metadata.spec.SpecConfig;
@@ -12,19 +10,18 @@ import org.spoofax.terms.TermFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MSdfSpecFactory {
+public class ModuleSpecFactory {
 
     public static SpecFragmentId getSpecId() {
-        return new SpecFragmentId("mb.minisdf");
+        return new SpecFragmentId("mb.module");
     }
 
     public static SpecConfig getSpecConfig(ITermFactory termFactory) {
         return ImmutableSpecConfig.builder()
-            .rootPackage(MSdfClassloaderResources.createDefinitionDir(MSdfClassloaderResources.createClassLoaderResourceRegistry())
+            .rootPackage(ModuleClassloaderResources.createDefinitionDir(ModuleClassloaderResources.createClassLoaderResourceRegistry())
                 .appendRelativePath("src-gen/statix"))
             .termFactory(termFactory)
-            .addRootModules("mini-sdf/mini-sdf-typing")
-            .addDependencies(SigSpecFactory.getSpecId())
+            .addRootModules("module-interface/modules")
             .build();
     }
 
@@ -32,9 +29,10 @@ public class MSdfSpecFactory {
         return getSpecConfig(new ImploderOriginTermFactory(new TermFactory()));
     }
 
-    public static Map<SpecFragmentId, SpecConfig> getSpecConfigs(ITermFactory termFactory) {
-        final HashMap<SpecFragmentId, SpecConfig> result = new HashMap<>(ModuleSpecFactory.getSpecConfigs());
-        result.put(getSpecId(), getSpecConfig(termFactory));
+    public static Map<SpecFragmentId, SpecConfig> getSpecConfigs() {
+        final HashMap<SpecFragmentId, SpecConfig> result = new HashMap<>();
+        result.put(ModuleSpecFactory.getSpecId(), ModuleSpecFactory.getSpecConfig());
+        result.putAll(SigSpecFactory.getSpecConfigs());
         return result;
     }
 }
