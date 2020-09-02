@@ -83,7 +83,8 @@ open class LanguageProjectSettings(
     val completer = if(this.completer != null) this.completer.shared(shared).languageProject(languageProject).build() else null
     val strategoRuntime = if(this.strategoRuntime != null) this.strategoRuntime.shared(shared).languageProject(languageProject).build() else null
     val constraintAnalyzer = if(this.constraintAnalyzer != null) this.constraintAnalyzer.shared(shared).languageProject(languageProject).build() else null
-    val multilangAnalyzer = if(this.multilangAnalyzer != null) this.multilangAnalyzer.shared(shared).languageProject(languageProject).classloaderResources(classloaderResources).build() else null
+    val multilangAnalyzer = if(this.multilangAnalyzer != null) this.multilangAnalyzer.shared(shared).languageProject(languageProject)
+      .classloaderResources(classloaderResources.classloaderResources()).build() else null
     val builder = this.builder
       .shared(shared)
       .languageProject(languageProject)
@@ -124,7 +125,7 @@ open class LanguageProjectSettings(
     return LanguageProjectFinalized(shared, input, Compilers())
   }
 
-  fun addStatixDependencies(statixDependencies: List<Project>) {
+  internal fun addStatixDependencies(statixDependencies: List<Project>) {
     statixDependencies.forEach {
       val ext : LanguageProjectExtension = it.extensions.getByType()
       val factory = ext.settingsFinalized.input.multilangAnalyzer().get().specConfigFactory()
@@ -134,6 +135,8 @@ open class LanguageProjectSettings(
 }
 
 open class LanguageProjectExtension(project: Project) {
+  // statixDependencies must be in a separate property, since its finalized
+  // value is used to check if the settings property can be finalized
   val statixDependencies: Property<List<Project>> = project.objects.property()
   val settings: Property<LanguageProjectSettings> = project.objects.property()
 
@@ -187,7 +190,8 @@ internal class LanguageProjectFinalized(
 
 internal fun Project.whenLanguageProjectFinalized(closure: () -> Unit) = whenFinalized<LanguageProjectExtension> {
   val extension : LanguageProjectExtension = extensions.getByType()
-  extension.statixDependenciesFinalized.whenDependenciesFinalized(closure)
+  // Project is fully finalized only iff all dependencies are finalized as well
+  extension.statixDependenciesFinalized.whenAllLanguageProjectsFinalized(closure)
 }
 
 @Suppress("unused")
@@ -200,7 +204,7 @@ open class LanguagePlugin : Plugin<Project> {
     project.plugins.apply("org.metaborg.spoofax.gradle.base")
 
     project.afterEvaluate {
-      extension.statixDependenciesFinalized.whenDependenciesFinalized {
+      extension.statixDependenciesFinalized.whenAllLanguageProjectsFinalized {
         configure(project, extension.settingsFinalized)
       }
     }
@@ -295,15 +299,14 @@ open class LanguagePlugin : Plugin<Project> {
   }
 }
 
-private fun List<Project>.whenDependenciesFinalized(closure: () -> Unit) {
+internal fun List<Project>.whenAllLanguageProjectsFinalized(closure: () -> Unit) {
   if(isEmpty()) {
     // No dependencies to wait for, so execute immediately
     closure()
-  }
-  else {
+  } else {
     // After first project in list is finalized, invoke wait for the others
-    get(0).whenLanguageProjectFinalized {
-      drop(1).whenDependenciesFinalized(closure)
+    first().whenLanguageProjectFinalized {
+      drop(1).whenAllLanguageProjectsFinalized(closure)
     }
   }
 }
