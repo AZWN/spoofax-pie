@@ -20,6 +20,7 @@ dependencies {
 }
 
 spoofaxLanguageProject {
+  statixDependencies.set(listOf(project(":signature")))
   settings.set(mb.spoofax.compiler.gradle.spoofaxcore.LanguageProjectSettings(
     shared = mb.spoofax.compiler.spoofaxcore.Shared.builder()
       .name("MiniStr")
@@ -36,9 +37,7 @@ spoofaxLanguageProject {
       .copyClasses(false)
       .copyCTree(true),
     multilangAnalyzer = MultilangAnalyzerCompiler.LanguageProjectInput.builder()
-      .rootModules(listOf("mini-str/mini-str-typing"))
-      // FIXME: Find better way to reference this class
-      .dependencyFactories(listOf(TypeInfo.of("mb.signature", "SignatureSpecConfigFactory"))),
+      .rootModules(listOf("mini-str/mini-str-typing")),
 
     builder = LanguageProjectCompiler.Input.builder()
       .languageSpecificationDependency(GradleDependency.module("$group:ministr.spoofaxcore:$version"))
