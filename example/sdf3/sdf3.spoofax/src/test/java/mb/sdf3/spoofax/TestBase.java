@@ -6,7 +6,6 @@ import mb.common.result.Result;
 import mb.log.api.Logger;
 import mb.log.api.LoggerFactory;
 import mb.log.slf4j.SLF4JLoggerFactory;
-import mb.pie.api.Function;
 import mb.pie.api.MixedSession;
 import mb.pie.api.Pie;
 import mb.pie.api.Supplier;

@@ -196,7 +196,7 @@ public class TigerModule {
     }
 
     @Provides @LanguageScope
-    static Pie providePie( @Named("prototype") Pie pie) {
+    static Pie providePie(@Named("prototype") Pie pie) {
         return pie;
     }
 

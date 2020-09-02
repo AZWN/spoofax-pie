@@ -5,7 +5,6 @@ import mb.pie.api.ExecException;
 import mb.spoofax.eclipse.SpoofaxPlugin;
 import mb.spoofax.eclipse.util.StatusUtil;
 import mb.statix.multilang.eclipse.MultiLangPlugin;
-import mb.statix.multilang.eclipse.UpdateAnalysisConfigChangeListener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.core.resources.WorkspaceJob;
@@ -16,13 +15,11 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MiniStrPlugin extends AbstractUIPlugin {
     public static final String pluginId = "ministr.eclipse";
 
     private static @Nullable MiniStrEclipseComponent component;
-    private static @Nullable UpdateAnalysisConfigChangeListener configListener;
 
     public static MiniStrEclipseComponent getComponent() {
         if(component == null) {
@@ -36,15 +33,13 @@ public class MiniStrPlugin extends AbstractUIPlugin {
         component = DaggerMiniStrEclipseComponent
             .builder()
             .platformComponent(SpoofaxPlugin.getComponent())
-            .multiLangComponent(MultiLangPlugin.getComponent())
+            .multiLangEclipseComponent(MultiLangPlugin.getComponent())
             .miniStrModule(new MiniStrModule())
             .miniStrEclipseModule(new MiniStrEclipseModule())
             .build();
         component.getEditorTracker().register();
-        configListener = new UpdateAnalysisConfigChangeListener(component);
-        MultiLangPlugin.getConfigResourceChangeListener().addDelegate(configListener);
 
-        WorkspaceJob startupJob = new WorkspaceJob("MiniStr startup") {
+        WorkspaceJob job = new WorkspaceJob("MiniStr startup") {
             @Override public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
                 try {
                     SpoofaxPlugin.getComponent().getPieRunner().startup(getComponent(), monitor);
@@ -54,16 +49,12 @@ public class MiniStrPlugin extends AbstractUIPlugin {
                 return StatusUtil.success();
             }
         };
-        startupJob.setRule(MultiLangPlugin.getComponent().startUpLockRule());
-        startupJob.schedule();
+        job.setRule(component.startupWriteLockRule());
+        job.schedule();
     }
 
     @Override public void stop(@NonNull BundleContext context) throws Exception {
         super.stop(context);
-        if(configListener != null) {
-            MultiLangPlugin.getConfigResourceChangeListener().removeDelegate(configListener);
-        }
-        configListener = null;
         component = null;
     }
 }
