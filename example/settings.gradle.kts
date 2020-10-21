@@ -74,4 +74,21 @@ fun String.includeProject(id: String, path: String = "$this/$id") {
   includeProject("multilang.test")
 }
 
+"newyork".run {
+  includeProject("canarsie.spoofaxcore")
+  includeProject("canarsie")
 
+  includeProject("brooklyn.spoofaxcore")
+  includeProject("brooklyn")
+  includeProject("brooklyn.spoofax")
+  // includeProject("brooklyn.eclipse.externaldeps")
+  includeProject("brooklyn.eclipse")
+
+  includeProject("manhattan.spoofaxcore")
+  includeProject("manhattan")
+  includeProject("manhattan.spoofax")
+  // includeProject("manhattan.eclipse.externaldeps")
+  includeProject("manhattan.eclipse")
+
+  includeProject("new-york.eclipse")
+}
